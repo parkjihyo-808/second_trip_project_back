@@ -60,19 +60,19 @@ public class CustomSecurityConfig {
         AuthenticationManagerBuilder authenticationManagerBuilder =
                 http.getSharedObject(AuthenticationManagerBuilder.class);
 
-// AuthenticationManagerBuilder에 UserDetailsService와 PasswordEncoder 설정
+        // AuthenticationManagerBuilder에 UserDetailsService와 PasswordEncoder 설정
         authenticationManagerBuilder
                 .userDetailsService(apiUserDetailsService) // 사용자 정보를 제공하는 서비스 설정   //유저 정보 dto 생성
                 .passwordEncoder(passwordEncoder()); // 비밀번호 암호화 방식 설정
 
-// AuthenticationManager 생성
+        // AuthenticationManager 생성
         AuthenticationManager authenticationManager =
                 authenticationManagerBuilder.build();
 
-// AuthenticationManager를 HttpSecurity에 설정
+        // AuthenticationManager를 HttpSecurity에 설정
         http.authenticationManager(authenticationManager); // 반드시 필요: Security 필터 체인에서 사용할 AuthenticationManager 설정
 
-// APILoginFilter 생성 및 AuthenticationManager 설정
+        // APILoginFilter 생성 및 AuthenticationManager 설정
         APILoginFilter apiLoginFilter = new APILoginFilter("/generateToken"); // 로그인 포스트 엔드포인트 설정
         apiLoginFilter.setAuthenticationManager(authenticationManager); // APILoginFilter에서 사용할 AuthenticationManager 설정
 
@@ -80,10 +80,10 @@ public class CustomSecurityConfig {
         // 교체
         APILoginSuccessHandler successHandler = new APILoginSuccessHandler(jwtUtil);    //성공하면 키생성해서 응답하는 핸들러
 
-// SuccessHandler 설정: 로그인 성공 시 APILoginSuccessHandler가 호출되도록 설정
+        // SuccessHandler 설정: 로그인 성공 시 APILoginSuccessHandler가 호출되도록 설정
         apiLoginFilter.setAuthenticationSuccessHandler(successHandler); //로그인 필터에서 성공시 응답할 핸들러 등록
 
-// APILoginFilter를 UsernamePasswordAuthenticationFilter 이전에 추가
+        // APILoginFilter를 UsernamePasswordAuthenticationFilter 이전에 추가
         //apiLoginFilter설정
         //로그인 필터는 로그인 할때만 사용
         http.addFilterBefore(apiLoginFilter, UsernamePasswordAuthenticationFilter.class); // 사용자 인증 전에 APILoginFilter 동작 설정
