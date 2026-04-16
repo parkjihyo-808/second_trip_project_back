@@ -36,8 +36,7 @@ public class TokenCheckFilter extends OncePerRequestFilter {
         // 요청 경로 가져오기
         String path = request.getRequestURI();
 
-        // "/api/"로 시작하지 않는 경로는 필터 처리하지 않음
-        if (!path.startsWith("/api/")) {
+        if (path.startsWith("/api/member/register") || path.startsWith("/api/member/login")) {
             filterChain.doFilter(request, response);
             return;
         }
