@@ -16,7 +16,7 @@ import java.util.Map;
 @Component
 public class JWTUtil {
 
-    @Value("${com.busanit5012.jwt.secret}") // 비밀키를 외부 설정에서 가져옴
+    @Value("busainit501234567890busainit501234567890busainit501234567890") // 비밀키를 외부 설정에서 가져옴
     private String key;
 
 
