@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -13,10 +14,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-@Log4j2 // 로그 찍어서 설정 로드되는지 확인!
+@Log4j2
 public class CustomSecurityConfig {
 
     @Bean
@@ -26,19 +28,21 @@ public class CustomSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        log.info("------------------- 시큐리티 설정 로드 중... -------------------");
+        log.info("------------------- 시큐리티 설정 로드 중 (외부 접속 허용 버전) -------------------");
 
-        // 1. CSRF 비활성화 (POST 요청 시 필수!)
-        http.csrf(csrf -> csrf.disable());
+        // 1. CSRF 완전 비활성화 (가장 확실한 방법)
+        http.csrf(AbstractHttpConfigurer::disable);
 
-        // 2. CORS 설정 (나중에 플러터랑 통신할 때 필요)
+        // 2. CORS 설정 연결
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
-        // 3. 모든 API 경로(/api/**) 권한 없이 허용!
+        // 3. 권한 설정 (로그인 없이 가입이 가능하도록 더 명확하게!)
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/member/**").permitAll() // 멤버 관련 API 허용
-                .anyRequest().permitAll() // 일단 테스트 중엔 다 열어버리자!
+                .requestMatchers("/api/member/**").permitAll() // 회원가입, 로그인 등 멤버 경로 허용
+                .anyRequest().permitAll() // 나머지 요청도 일단 모두 허용
         );
+
+        // 4. 세션 설정 (나중에 토큰/JWT 쓸 거면 Stateless로 가야 하지만, 일단 기본으로 둬!)
 
         return http.build();
     }
@@ -46,13 +50,19 @@ public class CustomSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(Arrays.asList("*")); // 모든 곳에서 오는 요청 허용
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+
+        // ⭐ 모든 도메인에서 오는 요청을 허용 (플러터 웹이나 다른 브라우저 대응)
+        configuration.setAllowedOriginPatterns(List.of("*"));
+
+        // ⭐ 헤더와 메서드 허용 범위를 조금 더 넓게 잡아주자
+        configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
+
+        // ⭐ 인증 정보(쿠키 등)를 포함한 요청 허용
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
+        source.registerCorsConfiguration("/**", configuration); // 모든 경로에 대해 CORS 적용
         return source;
     }
 }
