@@ -10,6 +10,7 @@ import java.util.List;
 public interface AirportReservationRepository
         extends JpaRepository<AirportReservation, Long> {
 
+
     // ── 회원 ID로 예약 조회 ───────────────────────────────────
 //    List<AirportReservation> findByMemberIdOrderByReservedAtDesc(String mid);
     List<AirportReservation> findByMidOrderByReservedAtDesc(String mid);

@@ -8,6 +8,7 @@ import java.util.List;
 @Transactional
 public interface AirportFlightService {
 
+
     // ── 항공편 목록 조회 ─────────────────────────────────────
     List<AirportFlightDTO> getFlightList(
             String depAirportId,

@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 @Log4j2
 public class AirportFlightServiceImpl implements AirportFlightService {
 
+
     private final AirportFlightRepository airportFlightRepository;
 
 

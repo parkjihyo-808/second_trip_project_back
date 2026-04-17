@@ -12,6 +12,7 @@ public interface AirportReservationService {
     Long register(AirportReservationDTO dto);
 
 
+
     // ── 예약 단건 조회 ────────────────────────────────────────
     AirportReservationDTO getReservation(Long id);
 
