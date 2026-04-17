@@ -121,7 +121,11 @@ public class TokenCheckFilter extends OncePerRequestFilter {
                 path.startsWith("/api/member/register") ||
                 path.startsWith("/api/car/") ||
                 path.startsWith("/api/rental/search") ||
-                path.startsWith("/api/rental/unavailable")) {
+                path.startsWith("/api/rental/unavailable") ||
+                path.startsWith("/swagger-ui") ||
+                path.startsWith("/v3/api-docs") ||
+                path.startsWith("/swagger-resources") ||
+                path.startsWith("/webjars")) {
             return true;
         }
 
