@@ -33,14 +33,6 @@ public class TokenCheckFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        // 요청 경로 가져오기
-        String path = request.getRequestURI();
-
-        if (path.startsWith("/api/member/register") || path.startsWith("/api/member/login")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
         // 로그 출력
         log.info("Token Check Filter triggered...");
         log.info("JWTUtil instance: {}", jwtUtil);
@@ -115,17 +107,16 @@ public class TokenCheckFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
 
         // 아래 경로들로 들어오는 요청은 필터 로직(토큰 검사)을 건너뜁니다.
-        if (path.startsWith("/api/member/check-mid") ||
+        if (!path.startsWith("/api/") ||
+                path.startsWith("/api/member/check-mid") ||
+                path.startsWith("/api/member/register") ||
+                path.startsWith("/api/member/login") ||
                 path.startsWith("/api/member/check-email") ||
                 path.startsWith("/api/member/signup") ||
-                path.startsWith("/api/member/register") ||
-                path.startsWith("/api/car/") ||
+                path.startsWith("/api/airport/flights") ||
+                path.startsWith("/rent/") ||
                 path.startsWith("/api/rental/search") ||
-                path.startsWith("/api/rental/unavailable") ||
-                path.startsWith("/swagger-ui") ||
-                path.startsWith("/v3/api-docs") ||
-                path.startsWith("/swagger-resources") ||
-                path.startsWith("/webjars")) {
+                path.startsWith("/api/rental/unavailable")) {
             return true;
         }
 
