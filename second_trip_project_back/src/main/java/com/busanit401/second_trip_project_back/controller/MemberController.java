@@ -4,17 +4,18 @@ import com.busanit401.second_trip_project_back.dto.MemberDTO;
 import com.busanit401.second_trip_project_back.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Log4j2
 @RequiredArgsConstructor
-@RequestMapping("/api/member") // 이 주소로 요청을 보낼 거야!
+@RequestMapping("/api/member")
 public class MemberController {
 
     private final MemberService memberService;
 
-    // 1. 회원가입 창구 (POST 방식)
+    // 1. 회원가입
     @PostMapping("/register")
     public String register(@RequestBody MemberDTO memberDTO) {
         log.info("회원가입 요청 들어옴! 데이터: " + memberDTO);
@@ -22,18 +23,27 @@ public class MemberController {
         return "success";
     }
 
-    // 2. 회원정보 조회 창구 (GET 방식)
+    // ⭐ 2. 중복 확인 창구 추가! (플러터가 여기로 물어볼 거야)
+    @GetMapping("/exists/{email}")
+    public ResponseEntity<Boolean> checkDuplicate(@PathVariable("email") String email) {
+        log.info("중복 확인 요청 들어옴! 이메일: " + email);
+
+        // 서비스한테 "이 이메일 있니?" 물어보고 대답(true/false)을 보내줘요
+        boolean exists = memberService.existsByMid(email);
+        return ResponseEntity.ok(exists);
+    }
+
+    // 3. 회원정보 조회
     @GetMapping("/{mid}")
     public MemberDTO read(@PathVariable("mid") String mid) {
         log.info("회원조회 요청 들어옴! 아이디: " + mid);
         return memberService.read(mid);
     }
 
+    // 4. 로그인
     @PostMapping("/login")
     public MemberDTO login(@RequestBody MemberDTO memberDTO) {
         log.info("로그인 시도 아이디: " + memberDTO.getMid());
-
-        // 서비스의 로그인 호출!
         return memberService.login(memberDTO.getMid(), memberDTO.getMpw());
     }
 }
