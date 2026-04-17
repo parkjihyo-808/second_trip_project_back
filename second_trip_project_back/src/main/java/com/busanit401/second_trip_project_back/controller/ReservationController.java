@@ -26,14 +26,18 @@ public class ReservationController {
     // ─── 예약 생성 ────────────────────────────────────
     // POST /api/reservations
     @PostMapping
-    public ResponseEntity<ReservationResponseDTO> createReservation(
+    public ResponseEntity<?> createReservation(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestBody ReservationRequestDTO requestDTO) {
-
-        Member member = getMember(userDetails);
-        ReservationResponseDTO response =
-                reservationService.createReservation(member, requestDTO);
-        return ResponseEntity.ok(response);
+        try {
+            Member member = getMember(userDetails);
+            ReservationResponseDTO response =
+                    reservationService.createReservation(member, requestDTO);
+            return ResponseEntity.ok(response);
+        } catch (IllegalStateException e) {
+            // 예약 중복 에러 → 400으로 응답
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     // ─── 내 예약 목록 조회 ────────────────────────────
