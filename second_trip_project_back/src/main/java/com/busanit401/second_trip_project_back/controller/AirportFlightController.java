@@ -120,4 +120,5 @@ public class AirportFlightController {
 
         return ResponseEntity.ok().build();
     }
+
 }

@@ -14,6 +14,7 @@ public interface AirportReservationRepository
 //    List<AirportReservation> findByMemberIdOrderByReservedAtDesc(String mid);
     List<AirportReservation> findByMidOrderByReservedAtDesc(String mid);
 
+
     // ── 탑승객 이름으로 예약 조회 ─────────────────────────────
 //    List<AirportReservation> findByPassengerName(String passengerName);
 

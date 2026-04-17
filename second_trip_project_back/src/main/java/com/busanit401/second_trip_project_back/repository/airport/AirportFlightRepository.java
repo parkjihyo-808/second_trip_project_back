@@ -13,6 +13,7 @@ public interface AirportFlightRepository extends JpaRepository<AirportFlight, Lo
     List<AirportFlight> findByDepAirportIdAndArrAirportId(
             String depAirportId,
             String arrAirportId
+
     );
 
     // ── 출발/도착 공항코드 + 출발날짜로 항공편 조회 ───────────
