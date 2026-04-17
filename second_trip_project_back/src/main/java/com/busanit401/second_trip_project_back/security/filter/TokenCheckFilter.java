@@ -108,6 +108,7 @@ public class TokenCheckFilter extends OncePerRequestFilter {
 
         // 아래 경로들로 들어오는 요청은 필터 로직(토큰 검사)을 건너뜁니다.
         if (!path.startsWith("/api/") ||
+                path.startsWith("/api/member/exists/") ||
                 path.startsWith("/api/member/check-mid") ||
                 path.startsWith("/api/member/register") ||
                 path.startsWith("/api/member/login") ||

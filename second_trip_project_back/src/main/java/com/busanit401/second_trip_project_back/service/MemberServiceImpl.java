@@ -86,9 +86,11 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public boolean existsByMid(String mid) {
-        log.info("DB에서 중복 체크 중: " + mid);
-        // existsById(mid)가 안 된다면 findByMid가 존재하는지로 체크!
-        return memberRepository.findByMid(mid).isPresent();
+        if (mid == null || mid.isBlank()) return false;
+        log.info("DB에서 중복 체크 중 (공백제거): " + mid.trim());
+
+        // 리포지토리에 새로 만든 통합 쿼리를 호출!
+        return memberRepository.existsByMid(mid.trim());
     }
 
     @Override

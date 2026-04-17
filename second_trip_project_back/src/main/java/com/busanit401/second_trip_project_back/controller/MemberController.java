@@ -24,11 +24,10 @@ public class MemberController {
     }
 
     // ⭐ 2. 중복 확인 창구 추가! (플러터가 여기로 물어볼 거야)
-    @GetMapping("/exists/{email}")
+    // ⭐ 2. 중복 확인 창구 (경로 부분만 살짝 수정!)
+    @GetMapping("/exists/{email:.+}") // 👈 뒤에 :.+ 를 꼭 붙여줘!
     public ResponseEntity<Boolean> checkDuplicate(@PathVariable("email") String email) {
         log.info("중복 확인 요청 들어옴! 이메일: " + email);
-
-        // 서비스한테 "이 이메일 있니?" 물어보고 대답(true/false)을 보내줘요
         boolean exists = memberService.existsByMid(email);
         return ResponseEntity.ok(exists);
     }
