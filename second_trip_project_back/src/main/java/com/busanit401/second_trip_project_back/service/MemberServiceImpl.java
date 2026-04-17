@@ -4,12 +4,14 @@ import com.busanit401.second_trip_project_back.domain.member.Member;
 import com.busanit401.second_trip_project_back.domain.member.MemberRole;
 import com.busanit401.second_trip_project_back.dto.MemberDTO;
 import com.busanit401.second_trip_project_back.repository.MemberRepository;
+import com.busanit401.second_trip_project_back.util.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -20,46 +22,28 @@ public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JWTUtil jwtUtil; // ⭐ 1. 토큰 기계 소환! (팀원분이 만든 클래스 이름 확인해줘)
 
     @Override
     public void register(MemberDTO memberDTO) {
-        Member member = Member.builder()
-                .mid(memberDTO.getMid())
-                .mpw(passwordEncoder.encode(memberDTO.getMpw())) // 암호화 저장!
-                .mname(memberDTO.getMname())
-                .email(memberDTO.getEmail())
-                .phone(memberDTO.getPhone())
-                .role(MemberRole.USER)
-                .build();
 
-        memberRepository.save(member);
     }
 
     @Override
     public MemberDTO read(String mid) {
-        Optional<Member> result = memberRepository.findByMid(mid);
-        Member member = result.orElseThrow(() -> new RuntimeException("해당 회원을 찾을 수 없습니다."));
-        return entityToDTO(member);
+        return null;
     }
 
     @Override
     public void modify(MemberDTO memberDTO) {
-        Optional<Member> result = memberRepository.findByMid(memberDTO.getMid());
-        Member member = result.orElseThrow(() -> new RuntimeException("수정할 회원이 없습니다."));
-        member.changeMname(memberDTO.getMname());
-        member.changeEmail(memberDTO.getEmail());
-        member.changePhone(memberDTO.getPhone());
-        memberRepository.save(member);
+
     }
 
     @Override
     public void remove(String mid) {
-        Member member = memberRepository.findByMid(mid)
-                .orElseThrow(() -> new RuntimeException("삭제할 회원이 없습니다."));
-        memberRepository.deleteById(member.getId());
+
     }
 
-    // ⭐ 로그인 메소드는 딱 이 '하나'만 남겨둬야 해!
     @Override
     public MemberDTO login(String mid, String mpw) {
         Member member = memberRepository.findByMid(mid)
@@ -69,33 +53,42 @@ public class MemberServiceImpl implements MemberService {
             throw new RuntimeException("비밀번호가 일치하지 않습니다.");
         }
 
-        return entityToDTO(member);
+        // 2. 일단 정보를 봉투에 담아!
+        MemberDTO memberDTO = entityToDTO(member);
+
+        // ⭐ 3. [핵심!] 여기서 팔찌를 찍어서 봉투에 쏙 넣어줘야 해!
+        // jwtUtil.generateToken의 사용법은 팀원분이 짠 코드에 따라 다를 수 있어!
+        String token = jwtUtil.generateToken(Map.of("mid", mid), 1); // 예시: 1일짜리 토큰
+        memberDTO.setAccessToken(token); // 👈 이제 'null' 탈출!
+
+        return memberDTO;
     }
 
     @Override
     public Optional<Member> findByMid(String mid) {
-        return memberRepository.findByMid(mid);
+        return Optional.empty();
     }
 
     @Override
     public boolean existsByMid(String mid) {
-        return memberRepository.existsByMid(mid);
+        return false;
     }
 
     @Override
     public Optional<Member> findByEmail(String email) {
-        return memberRepository.findByEmail(email);
+        return Optional.empty();
     }
 
+    // 4. 봉투 만드는 기계도 업데이트!
     private MemberDTO entityToDTO(Member member) {
         return MemberDTO.builder()
                 .mid(member.getMid())
-                .mpw(member.getMpw())
                 .mname(member.getMname())
                 .email(member.getEmail())
                 .phone(member.getPhone())
                 .role(member.getRole().name())
                 .regDate(member.getRegDate())
+                // .accessToken(null) // 처음엔 비어있지만 나중에 login에서 채울 거야!
                 .build();
     }
 }
