@@ -1,4 +1,4 @@
-package com.busanit401.second_trip_project_back.domain;
+package com.busanit401.second_trip_project_back.domain.member;
 
 import jakarta.persistence.*;
 import lombok.*;
