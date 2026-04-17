@@ -12,8 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AirportFlightDTO {
 
-
-
     // ── 항공편 정보 ──────────────────────────────────────────
     private Long id;
     private String airlineNm;       // 항공사명

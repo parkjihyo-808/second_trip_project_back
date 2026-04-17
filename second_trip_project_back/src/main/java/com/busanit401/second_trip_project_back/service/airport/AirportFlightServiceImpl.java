@@ -15,9 +15,7 @@ import java.util.stream.Collectors;
 @Log4j2
 public class AirportFlightServiceImpl implements AirportFlightService {
 
-
     private final AirportFlightRepository airportFlightRepository;
-
 
     // ── 항공편 목록 조회 ─────────────────────────────────────
     @Override

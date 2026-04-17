@@ -17,8 +17,6 @@ public class AirportReservationServiceImpl implements AirportReservationService 
 
     private final AirportReservationRepository airportReservationRepository;
 
-
-
     // ── 예약 등록 ─────────────────────────────────────────────
     @Override
     public Long register(AirportReservationDTO dto) {

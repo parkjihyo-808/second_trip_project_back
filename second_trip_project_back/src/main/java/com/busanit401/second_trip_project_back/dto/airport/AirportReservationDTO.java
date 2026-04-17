@@ -12,8 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AirportReservationDTO {
 
-
-
     // ── 기본키 ──────────────────────────────────────────────
     private Long id;
 

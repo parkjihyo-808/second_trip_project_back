@@ -13,8 +13,6 @@ import lombok.*;
 @ToString
 public class AirportFlight {
 
-
-
     // ── 기본키 ──────────────────────────────────────────────
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

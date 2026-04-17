@@ -9,7 +9,6 @@ import java.util.List;
 @Repository
 public interface AirportFlightRepository extends JpaRepository<AirportFlight, Long> {
 
-
     // ── 출발/도착 공항코드로 항공편 조회 ─────────────────────
     List<AirportFlight> findByDepAirportIdAndArrAirportId(
             String depAirportId,

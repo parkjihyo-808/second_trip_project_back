@@ -13,8 +13,6 @@ import lombok.*;
 @ToString
 public class AirportReservation {
 
-
-
     // ── 기본키 ──────────────────────────────────────────────
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
