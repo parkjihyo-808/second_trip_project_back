@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/airport")
@@ -20,21 +21,28 @@ public class AirportReservationController {
 
     private final AirportReservationService airportReservationService;
 
-    // ── 예약 등록 ─────────────────────────────────────────────
+    // ── 예약 등록 (중복 체크 포함) ───────────────────────────
     @PostMapping("/reservations")
     @Operation(summary = "예약 등록",
-            description = "항공권 예약 등록")
-    public ResponseEntity<Long> register(
+            description = "항공권 예약 등록 (중복 예약 시 400 반환)")
+    public ResponseEntity<?> register(
             @RequestBody AirportReservationDTO dto) {
 
-        log.info("✅ [AirportReservationController] 예약 등록 → 탑승객: {}",
-                dto.getPassengerName());
+        log.info("✅ [AirportReservationController] 예약 등록 → mid: {}",
+                dto.getMid());
+        log.info("✅ [AirportReservationController] depAirportId: {} / arrAirportId: {} / depPlandTime: {}",
+                dto.getDepAirportId(), dto.getArrAirportId(), dto.getDepPlandTime());
 
-        Long id = airportReservationService.register(dto);
-
-        log.info("✅ [AirportReservationController] 예약 등록 완료 → id: {}", id);
-
-        return ResponseEntity.ok(id);
+        try {
+            Long id = airportReservationService.register(dto);
+            log.info("✅ [AirportReservationController] 예약 등록 완료 → id: {}", id);
+            return ResponseEntity.ok(id);
+        } catch (RuntimeException e) {
+            // ✅ 중복 예약 시 400 + message 반환
+            log.warn("❌ [AirportReservationController] 예약 실패 → {}", e.getMessage());
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", e.getMessage()));
+        }
     }
 
     // ── 예약 단건 조회 ────────────────────────────────────────
