@@ -1,10 +1,10 @@
 package com.busanit401.second_trip_project_back.dto.airport;
 
 import com.busanit401.second_trip_project_back.entity.airport.AirportReservation;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @Builder
@@ -15,8 +15,8 @@ public class AirportReservationDTO {
     // ── 기본키 ──────────────────────────────────────────────
     private Long id;
 
-    // ── 회원 정보 (로그인 연동) ──────────────────────────────
-    private String mid;    // ✅ 로그인 회원 ID
+    // ── 회원 정보 ────────────────────────────────────────────
+    private String mid;             // 로그인 회원 ID
 
     // ── 가는편 정보 ──────────────────────────────────────────
     private String airlineNm;       // 항공사명
@@ -36,10 +36,8 @@ public class AirportReservationDTO {
     private String retArrPlandTime; // 오는편 도착 예정시각
     private Integer retPrice;       // 오는편 가격
 
-    // ── 탑승객 정보 ──────────────────────────────────────────
-    private String passengerName;   // 탑승객 이름
-    private String passengerBirth;  // 생년월일
-    private String passengerGender; // 성별
+    // ── 탑승객 목록 (passenger 테이블로 분리) ────────────────
+    private List<AirportPassengerDTO> passengers;
 
     // ── 예약 정보 ────────────────────────────────────────────
     private Boolean isRoundTrip;    // 편도/왕복
@@ -58,7 +56,7 @@ public class AirportReservationDTO {
     public static AirportReservationDTO fromEntity(AirportReservation entity) {
         return AirportReservationDTO.builder()
                 .id(entity.getId())                             // 기본키
-                .mid(entity.getMid())                 // 회원 ID
+                .mid(entity.getMid())                           // 회원 ID
                 .airlineNm(entity.getAirlineNm())               // 항공사명
                 .flightNo(entity.getFlightNo())                 // 항공편명
                 .depAirportNm(entity.getDepAirportNm())         // 출발 공항명
@@ -73,9 +71,9 @@ public class AirportReservationDTO {
                 .retDepPlandTime(entity.getRetDepPlandTime())   // 오는편 출발 예정시각
                 .retArrPlandTime(entity.getRetArrPlandTime())   // 오는편 도착 예정시각
                 .retPrice(entity.getRetPrice())                 // 오는편 가격
-                .passengerName(entity.getPassengerName())       // 탑승객 이름
-                .passengerBirth(entity.getPassengerBirth())     // 생년월일
-                .passengerGender(entity.getPassengerGender())   // 성별
+                .passengers(entity.getPassengers().stream()     // 탑승객 목록
+                        .map(AirportPassengerDTO::fromEntity)
+                        .collect(Collectors.toList()))
                 .isRoundTrip(entity.getIsRoundTrip())           // 편도/왕복
                 .reservedAt(entity.getReservedAt())             // 예약 일시
                 .build();
@@ -84,26 +82,23 @@ public class AirportReservationDTO {
     // ── DTO → Entity 변환 ────────────────────────────────────
     public AirportReservation toEntity() {
         return AirportReservation.builder()
-                .mid(mid)                 // 회원 ID
-                .airlineNm(airlineNm)               // 항공사명
-                .flightNo(flightNo)                 // 항공편명
-                .depAirportNm(depAirportNm)         // 출발 공항명
-                .arrAirportNm(arrAirportNm)         // 도착 공항명
-                .depAirportId(depAirportId)         // 출발 공항코드
-                .arrAirportId(arrAirportId)         // 도착 공항코드
-                .depPlandTime(depPlandTime)         // 출발 예정시각
-                .arrPlandTime(arrPlandTime)         // 도착 예정시각
-                .depPrice(depPrice)                 // 가는편 가격
-                .retAirlineNm(retAirlineNm)         // 오는편 항공사명
-                .retFlightNo(retFlightNo)           // 오는편 항공편명
-                .retDepPlandTime(retDepPlandTime)   // 오는편 출발 예정시각
-                .retArrPlandTime(retArrPlandTime)   // 오는편 도착 예정시각
-                .retPrice(retPrice)                 // 오는편 가격
-                .passengerName(passengerName)       // 탑승객 이름
-                .passengerBirth(passengerBirth)     // 생년월일
-                .passengerGender(passengerGender)   // 성별
-                .isRoundTrip(isRoundTrip)           // 편도/왕복
-                .reservedAt(reservedAt)             // 예약 일시
+                .mid(mid)                                       // 회원 ID
+                .airlineNm(airlineNm)                           // 항공사명
+                .flightNo(flightNo)                             // 항공편명
+                .depAirportNm(depAirportNm)                     // 출발 공항명
+                .arrAirportNm(arrAirportNm)                     // 도착 공항명
+                .depAirportId(depAirportId)                     // 출발 공항코드
+                .arrAirportId(arrAirportId)                     // 도착 공항코드
+                .depPlandTime(depPlandTime)                     // 출발 예정시각
+                .arrPlandTime(arrPlandTime)                     // 도착 예정시각
+                .depPrice(depPrice)                             // 가는편 가격
+                .retAirlineNm(retAirlineNm)                     // 오는편 항공사명
+                .retFlightNo(retFlightNo)                       // 오는편 항공편명
+                .retDepPlandTime(retDepPlandTime)               // 오는편 출발 예정시각
+                .retArrPlandTime(retArrPlandTime)               // 오는편 도착 예정시각
+                .retPrice(retPrice)                             // 오는편 가격
+                .isRoundTrip(isRoundTrip)                       // 편도/왕복
+                .reservedAt(reservedAt)                         // 예약 일시
                 .build();
     }
 }

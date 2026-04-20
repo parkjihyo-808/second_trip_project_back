@@ -3,6 +3,9 @@ package com.busanit401.second_trip_project_back.entity.airport;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "trip_airport_reservation")
 @Getter
@@ -67,14 +70,21 @@ public class AirportReservation {
     private Integer retPrice;       // 오는편 가격
 
     // ── 탑승객 정보 ──────────────────────────────────────────
-    @Column(nullable = false, length = 50)
-    private String passengerName;   // 탑승객 이름
+//    @Column(nullable = false, length = 50)
+//    private String passengerName;   // 탑승객 이름
+//
+//    @Column(nullable = false, length = 8)
+//    private String passengerBirth;  // 생년월일
+//
+//    @Column(nullable = false, length = 10)
+//    private String passengerGender; // 성별
 
-    @Column(nullable = false, length = 8)
-    private String passengerBirth;  // 생년월일
-
-    @Column(nullable = false, length = 10)
-    private String passengerGender; // 성별
+    // ── 탑승객 목록 (passenger 테이블로 분리) ────────────────
+    @OneToMany(mappedBy = "reservation",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    @Builder.Default
+    private List<AirportPassenger> passengers = new ArrayList<>();
 
     // ── 예약 정보 ────────────────────────────────────────────
     @Column(nullable = false)
@@ -88,8 +98,8 @@ public class AirportReservation {
             String passengerName,
             String passengerBirth,
             String passengerGender) {
-        this.passengerName   = passengerName;
-        this.passengerBirth  = passengerBirth;
-        this.passengerGender = passengerGender;
+//        this.passengerName   = passengerName;
+//        this.passengerBirth  = passengerBirth;
+//        this.passengerGender = passengerGender;
     }
 }
