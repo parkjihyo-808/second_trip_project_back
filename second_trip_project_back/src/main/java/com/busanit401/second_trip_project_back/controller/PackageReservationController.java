@@ -1,7 +1,8 @@
 package com.busanit401.second_trip_project_back.controller;
 
-import com.busanit401.second_trip_project_back.dto.PackageReservationDto;
+import com.busanit401.second_trip_project_back.dto.PackageReservationDTO;
 import com.busanit401.second_trip_project_back.service.PackageReservationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public class PackageReservationController {
     private final PackageReservationService packageReservationService;
 
     @PostMapping("/")
-    public ResponseEntity<Long> register(@RequestBody PackageReservationDto packageReservationDto) {
+    public ResponseEntity<Long> register(@Valid @RequestBody PackageReservationDTO packageReservationDto) {
         log.info("예약 요청 데이터: " + packageReservationDto);
 
         Long reservationId = packageReservationService.register(packageReservationDto);

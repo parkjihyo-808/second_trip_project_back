@@ -1,5 +1,7 @@
 package com.busanit401.second_trip_project_back.domain.packages;
 
+import com.busanit401.second_trip_project_back.domain.member.Member;
+import com.busanit401.second_trip_project_back.enums.ReservationStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,18 +13,22 @@ import java.time.LocalDate;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString
+@ToString(exclude = {"member", "packageItem"})
 public class PackageReservation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Long memberId;
+    // Member 엔티티와 연결 (PK인 id를 참조)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
 
-    @Column(nullable = false)
-    private String packageId;
+    // PackageItem 엔티티와 연결
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "package_id")
+    private PackageItem packageItem;
 
     @Column(nullable = false)
     private LocalDate reservationDate;
@@ -33,5 +39,6 @@ public class PackageReservation {
     @Column(nullable = false)
     private int totalPrice;
 
-    // 필요시 생성자나 연관관계 설정 메소드를 여기에 추가합니다.
+    @Enumerated(EnumType.STRING)
+    private ReservationStatus status; // PENDING, CONFIRMED 등
 }
