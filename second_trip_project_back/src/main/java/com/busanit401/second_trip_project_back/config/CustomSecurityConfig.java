@@ -110,7 +110,7 @@ public class CustomSecurityConfig {
                 .requestMatchers("/api/member/**").permitAll() // 회원가입, 로그인 등 멤버 경로 허용
                 .requestMatchers("/car/**").permitAll()
                 .requestMatchers("/swagger-ui/**","/v3/api-docs/**","swagger-resources/**", "/webjars/**").permitAll()
-                .anyRequest().permitAll() // 나머지 요청도 일단 모두 허용
+                .anyRequest().authenticated() // 나머지 요청은 인증 필요
         );
 
         // 4. 세션 설정 (나중에 토큰/JWT 쓸 거면 Stateless로 가야 하지만, 일단 기본으로 둬!)
