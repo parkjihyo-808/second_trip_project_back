@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+// 항공편 REST API 컨트롤러
+// Swagger: http://서버IP:8080/swagger-ui/index.html 에서 확인 가능
 @RestController
 @RequestMapping("/api/airport")
 @RequiredArgsConstructor
@@ -21,6 +23,8 @@ public class AirportFlightController {
     private final AirportFlightService airportFlightService;
 
     // ── 항공편 목록 조회 ─────────────────────────────────────
+    // GET /api/airport/flights?depAirportId=GIMHAE&arrAirportId=JEJU&depPlandTime=20260421
+    // Flutter FlightController.fetchInitial() / fetchReturnFlights() 에서 호출
     @GetMapping("/flights")
     @Operation(summary = "항공편 목록 조회",
             description = "출발지/도착지/날짜로 항공편 목록 조회")
@@ -34,10 +38,7 @@ public class AirportFlightController {
                 depAirportId, arrAirportId, depPlandTime);
 
         List<AirportFlightDTO> list = airportFlightService.getFlightList(
-                depAirportId,
-                arrAirportId,
-                depPlandTime
-        );
+                depAirportId, arrAirportId, depPlandTime);
 
         log.info("✅ [AirportFlightController] 조회 결과: {}건", list.size());
 
@@ -45,6 +46,8 @@ public class AirportFlightController {
     }
 
     // ── 항공편 단건 조회 ─────────────────────────────────────
+    // GET /api/airport/flights/{id}
+    // 현재 Flutter 에서 미사용
     @GetMapping("/flights/{id}")
     @Operation(summary = "항공편 단건 조회",
             description = "항공편 ID로 단건 조회")
@@ -59,6 +62,8 @@ public class AirportFlightController {
     }
 
     // ── 항공편 등록 (관리자) ──────────────────────────────────
+    // POST /api/airport/flights
+    // 관리자 기능 (Flutter 에서 직접 호출하지 않음)
     @PostMapping("/flights")
     @Operation(summary = "항공편 등록 (관리자)",
             description = "새로운 항공편 등록")
@@ -75,6 +80,9 @@ public class AirportFlightController {
     }
 
     // ── 항공편 수정 (관리자) ──────────────────────────────────
+    // PUT /api/airport/flights/{id}
+    // PathVariable id 를 DTO 에 직접 설정 후 서비스 호출
+    // ⚠️ economyCharge(DTO) → price(Entity) 매핑 (필드명 불일치, 작동 정상)
     @PutMapping("/flights/{id}")
     @Operation(summary = "항공편 수정 (관리자)",
             description = "항공편 정보 수정")
@@ -84,6 +92,7 @@ public class AirportFlightController {
 
         log.info("✅ [AirportFlightController] 항공편 수정 → id: {}", id);
 
+        // PathVariable id 를 DTO 에 세팅 후 서비스 전달
         dto = AirportFlightDTO.builder()
                 .id(id)
                 .airlineNm(dto.getAirlineNm())
@@ -94,7 +103,7 @@ public class AirportFlightController {
                 .arrAirportNm(dto.getArrAirportNm())
                 .depPlandTime(dto.getDepPlandTime())
                 .arrPlandTime(dto.getArrPlandTime())
-                .economyCharge(dto.getEconomyCharge())
+                .economyCharge(dto.getEconomyCharge()) // ⚠️ 발표 후 price 로 통일 예정
                 .seatsLeft(dto.getSeatsLeft())
                 .build();
 
@@ -106,6 +115,8 @@ public class AirportFlightController {
     }
 
     // ── 항공편 삭제 (관리자) ──────────────────────────────────
+    // DELETE /api/airport/flights/{id}
+    // 관리자 기능 (Flutter 에서 직접 호출하지 않음)
     @DeleteMapping("/flights/{id}")
     @Operation(summary = "항공편 삭제 (관리자)",
             description = "항공편 삭제")
@@ -120,5 +131,34 @@ public class AirportFlightController {
 
         return ResponseEntity.ok().build();
     }
-
 }
+
+/*
+ * ==================================================================================
+ * [파일 정보]
+ * 위치  : com.busanit401.second_trip_project_back.controller.AirportFlightController
+ * 역할  : 항공편 REST API 엔드포인트 제공
+ * 사용처 : Flutter FlightController (항공편 조회), 관리자 (등록/수정/삭제)
+ * ----------------------------------------------------------------------------------
+ * [연관 파일]
+ * - AirportFlightService.java      : 비즈니스 로직 위임
+ * - AirportFlightDTO.java          : 요청/응답 DTO
+ * - flight_controller.dart         : Flutter 에서 호출하는 클라이언트
+ * ----------------------------------------------------------------------------------
+ * [변경 이력]
+ * - 최초 작성 : 기본 CRUD API 구성
+ * ----------------------------------------------------------------------------------
+ * [API 목록]
+ * - GET    /api/airport/flights                : 항공편 목록 조회 (Flutter 메인 사용)
+ * - GET    /api/airport/flights/{id}           : 항공편 단건 조회 (현재 미사용)
+ * - POST   /api/airport/flights                : 항공편 등록 (관리자)
+ * - PUT    /api/airport/flights/{id}           : 항공편 수정 (관리자)
+ * - DELETE /api/airport/flights/{id}           : 항공편 삭제 (관리자)
+ * ----------------------------------------------------------------------------------
+ * [주의사항 / 참고]
+ * ⚠️ 필드명 불일치 (발표 후 통일 예정)
+ *    modify() 에서 dto.getEconomyCharge() 사용
+ *    Entity: price / DTO: economyCharge / Flutter: json['economyCharge']
+ * - Swagger UI: http://서버IP:8080/swagger-ui/index.html
+ * ==================================================================================
+ */
