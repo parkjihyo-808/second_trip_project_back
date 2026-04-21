@@ -1,6 +1,6 @@
 package com.busanit401.second_trip_project_back.service;
 
-import com.busanit401.second_trip_project_back.service.MemberService;
+import com.busanit401.second_trip_project_back.service.member.MemberService;
 import com.busanit401.second_trip_project_back.dto.MemberDTO;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;

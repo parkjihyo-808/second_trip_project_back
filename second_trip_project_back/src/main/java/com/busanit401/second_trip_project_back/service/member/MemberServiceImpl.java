@@ -1,4 +1,4 @@
-package com.busanit401.second_trip_project_back.service;
+package com.busanit401.second_trip_project_back.service.member;
 
 import com.busanit401.second_trip_project_back.domain.member.Member;
 import com.busanit401.second_trip_project_back.domain.member.MemberRole;
