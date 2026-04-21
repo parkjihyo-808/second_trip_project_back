@@ -1,7 +1,7 @@
 package com.busanit401.second_trip_project_back.controller;
 
 import com.busanit401.second_trip_project_back.dto.MemberDTO;
-import com.busanit401.second_trip_project_back.service.MemberService;
+import com.busanit401.second_trip_project_back.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
