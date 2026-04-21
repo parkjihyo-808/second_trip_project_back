@@ -6,7 +6,6 @@ import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -17,7 +16,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @ToString
 @EntityListeners(AuditingEntityListener.class)
-public class Rental {
+public class CarReservation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,10 +31,10 @@ public class Rental {
     private Member user;
 
     @Column(name = "start_date")
-    private LocalDate startDate;
+    private LocalDateTime startDate;
 
     @Column(name = "end_date")
-    private LocalDate endDate;
+    private LocalDateTime endDate;
 
     @Enumerated(EnumType.STRING)
     private RentalStatus status;
@@ -45,10 +44,6 @@ public class Rental {
     private LocalDateTime createdAt;
 
     public enum RentalStatus {
-        PENDING, CONFIRMED, CANCELLED
-    }
-
-    public void cancel() {
-        this.status = RentalStatus.CANCELLED;
+        PENDING, CONFIRMED
     }
 }

@@ -1,19 +1,19 @@
 package com.busanit401.second_trip_project_back.service.car;
 
 import com.busanit401.second_trip_project_back.domain.car.Car;
-import com.busanit401.second_trip_project_back.domain.car.RentCompany;
-import com.busanit401.second_trip_project_back.dto.car.RentCompanyApiDTO;
+import com.busanit401.second_trip_project_back.domain.car.RentCarCompany;
+import com.busanit401.second_trip_project_back.dto.car.CarCompanyApiDTO;
 import com.busanit401.second_trip_project_back.repository.car.CarRepository;
-import com.busanit401.second_trip_project_back.repository.car.RentCompanyRepository;
+import com.busanit401.second_trip_project_back.repository.car.RentCarCompanyRepository;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -25,7 +25,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class RentCarDataService {
 
-    private final RentCompanyRepository rentCompanyRepository;
+    private final RentCarCompanyRepository rentCarCompanyRepository;
     private final CarRepository carRepository;
 
     // 차량 스펙 정의
@@ -59,20 +59,20 @@ public class RentCarDataService {
             new CarSpec("볼트 EV",        "소형", 5, "전기",      40000, 55000)
     );
 
-//    @Value("${public.api.rent.serviceKey}")
+    @Value("${public.api.rent.serviceKey}")
     private String serviceKey;
 
     private static final String API_URL = "https://api.data.go.kr/openapi/tn_pubr_public_car_rental_api";
     private static final int NUM_OF_ROWS = 1000;
 
-    //@PostConstruct
+//    @PostConstruct
     public void init() {
-        if (rentCompanyRepository.count() > 0) {
+        if (rentCarCompanyRepository.count() > 0) {
             log.info("렌트카 회사 데이터 이미 존재 - API 호출 스킵");
             // 회사는 있는데 차량이 없으면 차량만 생성
             if (carRepository.count() == 0) {
                 log.info("차량 데이터 없음 - 차량만 생성 시작");
-                generateCarsForCompanies(rentCompanyRepository.findAll());
+                generateCarsForCompanies(rentCarCompanyRepository.findAll());
             }
             return;
         }
@@ -89,11 +89,14 @@ public class RentCarDataService {
     }
 
     private void fetchAndSaveAll() {
-        RestTemplate restTemplate = new RestTemplate();
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(10000);
+        factory.setReadTimeout(30000);
+        RestTemplate restTemplate = new RestTemplate(factory);
         Gson gson = new Gson();
 
         // 전체 데이터를 지역별로 모아둔 뒤 10분의 1만 저장
-        Map<String, List<RentCompany>> regionMap = new HashMap<>();
+        Map<String, List<RentCarCompany>> regionMap = new HashMap<>();
 
         int pageNo = 1;
         int totalCount = 0;
@@ -130,26 +133,26 @@ public class RentCarDataService {
 
                 for (int i = 0; i < items.size(); i++) {
                     JsonObject item = items.get(i).getAsJsonObject();
-                    RentCompanyApiDTO dto = gson.fromJson(item, RentCompanyApiDTO.class);
+                    CarCompanyApiDTO dto = gson.fromJson(item, CarCompanyApiDTO.class);
 
                     String name = dto.getEntrpsNm() != null ? dto.getEntrpsNm() : "";
-                    String roadAddress = dto.getRdnmadr() != null ? dto.getRdnmadr() : "";
+                    String rdnmadr = dto.getRdnmadr() != null ? dto.getRdnmadr() : "";
+                    String lnmadr = dto.getLnmadr() != null ? dto.getLnmadr() : "";
+                    String address = !rdnmadr.isBlank() ? rdnmadr : lnmadr;
 
                     // ctprvnNm 없으면 주소 첫 단어에서 지역 추출 (플러터와 동일 방식)
                     String rawRegion = dto.getCtprvnNm();
                     if (rawRegion == null || rawRegion.isBlank()) {
-                        String addr = !roadAddress.isBlank() ? roadAddress : (dto.getLnmadr() != null ? dto.getLnmadr() : "");
-                        rawRegion = addr.isBlank() ? null : addr.split(" ")[0];
+                        rawRegion = address.isBlank() ? null : address.split(" ")[0];
                     }
                     String region = normalizeRegion(rawRegion);
                     if (region == null) continue;
 
                     regionMap.computeIfAbsent(region, k -> new ArrayList<>())
-                            .add(RentCompany.builder()
+                            .add(RentCarCompany.builder()
                                     .name(name)
                                     .region(region)
-                                    .roadAddress(roadAddress)
-                                    .address(dto.getLnmadr())
+                                    .address(address)
                                     .latitude(dto.getLatitude())
                                     .longitude(dto.getLongitude())
                                     .phone(dto.getPhoneNumber())
@@ -169,24 +172,24 @@ public class RentCarDataService {
 
         // 지역별 10분의 1만 저장 (주소 중복 제거)
         int savedCount = 0;
-        for (Map.Entry<String, List<RentCompany>> entry : regionMap.entrySet()) {
-            List<RentCompany> all = entry.getValue();
+        for (Map.Entry<String, List<RentCarCompany>> entry : regionMap.entrySet()) {
+            List<RentCarCompany> all = entry.getValue();
             int keepCount = all.size() / 10;
             if (keepCount == 0) continue;
 
             // 주소 중복 제거하면서 keepCount만큼 추출
             Set<String> seenAddresses = new java.util.HashSet<>();
-            List<RentCompany> toSave = new ArrayList<>();
-            for (RentCompany company : all) {
+            List<RentCarCompany> toSave = new ArrayList<>();
+            for (RentCarCompany company : all) {
                 if (toSave.size() >= keepCount) break;
-                String addr = company.getRoadAddress() != null ? company.getRoadAddress() : company.getAddress();
+                String addr = company.getAddress();
                 if (addr == null || addr.isBlank()) continue;
                 if (seenAddresses.add(addr)) { // 중복이면 add가 false 반환
                     toSave.add(company);
                 }
             }
 
-            List<RentCompany> saved = rentCompanyRepository.saveAll(toSave);
+            List<RentCarCompany> saved = rentCarCompanyRepository.saveAll(toSave);
             savedCount += saved.size();
             generateCarsForCompanies(saved);
             log.info("지역={} 저장: {}건 (전체 {}건 중)", entry.getKey(), saved.size(), all.size());
@@ -195,12 +198,12 @@ public class RentCarDataService {
         log.info("렌트카 공공데이터 로딩 완료. 총 저장: {}건", savedCount);
     }
 
-    private void generateCarsForCompanies(List<RentCompany> companies) {
+    private void generateCarsForCompanies(List<RentCarCompany> companies) {
         Random random = new Random();
         List<Car> cars = new ArrayList<>();
 
-        for (RentCompany company : companies) {
-            int carCount = 5 + random.nextInt(11); // 5~15대
+        for (RentCarCompany company : companies) {
+            int carCount = 1 + random.nextInt(5); // 5~15대
 
             List<CarSpec> shuffled = new ArrayList<>(CAR_SPECS);
             Collections.shuffle(shuffled, random);

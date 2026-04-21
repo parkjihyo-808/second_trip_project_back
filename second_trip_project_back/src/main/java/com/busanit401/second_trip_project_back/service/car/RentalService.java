@@ -1,16 +1,14 @@
 package com.busanit401.second_trip_project_back.service.car;
 
-import com.busanit401.second_trip_project_back.dto.car.CarSearchResultDTO;
-import com.busanit401.second_trip_project_back.dto.car.RentalDTO;
-import com.busanit401.second_trip_project_back.dto.car.RentalRequestDTO;
+import com.busanit401.second_trip_project_back.dto.car.CarReservationCursorResponseDTO;
+import com.busanit401.second_trip_project_back.dto.car.CarReservationDTO;
+import com.busanit401.second_trip_project_back.dto.car.CarReservationRequestDTO;
 
-import java.time.LocalDate;
-import java.util.List;
+import java.time.LocalDateTime;
 
 public interface RentalService {
-    RentalDTO createRental(String mid, RentalRequestDTO request);
-    List<RentalDTO> getMyRentals(String mid);
-    RentalDTO cancelRental(String mid, Long rentalId);
-    List<Long> getUnavailableCarIds(LocalDate startDate, LocalDate endDate);
-    List<CarSearchResultDTO> searchCars(String region, LocalDate startDate, LocalDate endDate);
+    CarReservationDTO createReservation(String mid, CarReservationRequestDTO request);
+    CarReservationCursorResponseDTO getMyReservationsCursor(String mid, int cursorStatusOrder, LocalDateTime cursorEndDate, Long cursorId, int size);
+    CarReservationDTO cancelReservation(String mid, Long rentalId);
+
 }

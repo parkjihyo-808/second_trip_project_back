@@ -114,10 +114,7 @@ public class TokenCheckFilter extends OncePerRequestFilter {
                 path.startsWith("/api/member/login") ||
                 path.startsWith("/api/member/check-email") ||
                 path.startsWith("/api/member/signup") ||
-                path.startsWith("/api/airport/flights") ||
-                path.startsWith("/rent/") ||
-                path.startsWith("/api/rental/search") ||
-                path.startsWith("/api/rental/unavailable")) {
+                path.startsWith("/api/airport/flights")) {
             return true;
         }
 

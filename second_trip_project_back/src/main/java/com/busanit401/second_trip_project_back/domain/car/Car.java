@@ -18,7 +18,7 @@ public class Car {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id")
-    private RentCompany company;
+    private RentCarCompany company;
 
     private String name;
 

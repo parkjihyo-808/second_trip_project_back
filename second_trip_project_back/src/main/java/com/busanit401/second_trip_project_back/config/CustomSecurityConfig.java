@@ -108,7 +108,7 @@ public class CustomSecurityConfig {
         // 3. 권한 설정 (로그인 없이 가입이 가능하도록 더 명확하게!)
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/member/**").permitAll() // 회원가입, 로그인 등 멤버 경로 허용
-                .requestMatchers("/api/rental/search", "/api/rental/unavailable").permitAll()
+                .requestMatchers("/car/**").permitAll()
                 .requestMatchers("/swagger-ui/**","/v3/api-docs/**","swagger-resources/**", "/webjars/**").permitAll()
                 .anyRequest().permitAll() // 나머지 요청도 일단 모두 허용
         );

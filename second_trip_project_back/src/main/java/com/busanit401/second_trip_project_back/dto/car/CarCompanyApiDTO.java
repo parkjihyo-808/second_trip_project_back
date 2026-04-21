@@ -4,7 +4,7 @@ import lombok.Data;
 
 // 공공데이터 API 응답 매핑용 DTO
 @Data
-public class RentCompanyApiDTO {
+public class CarCompanyApiDTO {
 
     private String entrpsNm;   // 업체명
     private String rdnmadr;    // 도로명주소

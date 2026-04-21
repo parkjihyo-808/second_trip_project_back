@@ -1,24 +1,15 @@
 package com.busanit401.second_trip_project_back.service.car;
 
-import com.busanit401.second_trip_project_back.dto.car.CarDTO;
-import com.busanit401.second_trip_project_back.dto.car.RentCompanyDTO;
+import com.busanit401.second_trip_project_back.dto.car.CompanyCarPageResponseDTO;
+import com.busanit401.second_trip_project_back.dto.car.CarSearchCursorResponseDTO;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface RentCarService {
 
-    // 회사 목록 전체 or 지역별
-    List<RentCompanyDTO> getCompanies(String region);
-
-    // 회사 단건 조회
-    RentCompanyDTO getCompany(Long companyId);
-
-    // 특정 회사의 차량 목록
-    List<CarDTO> getCarsByCompany(Long companyId);
-
-    // 전체 차량 필터 조회
-    List<CarDTO> getCars(String type, String fuel, Integer seats);
-
-    // 차량 단건 조회
-    CarDTO getCar(Long carId);
+    // 지역 목록
+    List<String> getRegions();
+    CompanyCarPageResponseDTO searchCompanyCars(String carName, String region, LocalDate startDate, LocalDate endDate, int page, int size);
+    CarSearchCursorResponseDTO searchCarsWithCompanyCars(String region, LocalDate startDate, LocalDate endDate, int cursorPrice, String cursorName, int size, int companyCarSize);
 }

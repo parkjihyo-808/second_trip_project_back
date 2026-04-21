@@ -10,7 +10,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class RentCompany {
+public class RentCarCompany {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,9 +19,6 @@ public class RentCompany {
     private String name;
 
     private String region;
-
-    @Column(name = "road_address")
-    private String roadAddress;
 
     private String address;
 
