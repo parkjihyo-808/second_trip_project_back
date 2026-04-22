@@ -29,4 +29,9 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             @Param("roomCode") String roomCode,
             @Param("checkIn") java.time.LocalDate checkIn,
             @Param("checkOut") java.time.LocalDate checkOut);
+
+    List<Reservation> findByContentIdAndRoomCodeAndStatusNot(
+            String contentId,
+            String roomCode,
+            ReservationStatus status);
 }

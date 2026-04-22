@@ -84,4 +84,13 @@ public class ReservationController {
                 .orElseThrow(() ->
                         new IllegalArgumentException("회원을 찾을 수 없습니다."));
     }
+
+    @GetMapping("/booked-dates")
+    public ResponseEntity<List<String>> getBookedDates(
+            @RequestParam String contentId,
+            @RequestParam String roomCode) {
+        List<String> bookedDates =
+                reservationService.getBookedDates(contentId, roomCode);
+        return ResponseEntity.ok(bookedDates);
+    }
 }
