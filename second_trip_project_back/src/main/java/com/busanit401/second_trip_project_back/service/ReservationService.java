@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -102,5 +104,24 @@ public class ReservationService {
         log.info("예약 취소 완료: {}", reservationId);
 
         return ReservationResponseDTO.from(reservation);
+    }
+
+    // 예약된 날짜 목록 조회
+    @Transactional(readOnly = true)
+    public List<String> getBookedDates(String contentId, String roomCode) {
+        List<Reservation> reservations = reservationRepository
+                .findByContentIdAndRoomCodeAndStatusNot(
+                        contentId, roomCode, ReservationStatus.CANCELLED);
+
+        List<String> bookedDates = new ArrayList<>();
+        for (Reservation r : reservations) {
+            // 체크인 ~ 체크아웃 사이 모든 날짜 추가
+            LocalDate date = r.getCheckInDate();
+            while (!date.isAfter(r.getCheckOutDate())) {
+                bookedDates.add(date.toString());
+                date = date.plusDays(1);
+            }
+        }
+        return bookedDates;
     }
 }
