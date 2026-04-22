@@ -48,89 +48,89 @@ public class AirportFlightController {
     // ── 항공편 단건 조회 ─────────────────────────────────────
     // GET /api/airport/flights/{id}
     // 현재 Flutter 에서 미사용
-    @GetMapping("/flights/{id}")
-    @Operation(summary = "항공편 단건 조회",
-            description = "항공편 ID로 단건 조회")
-    public ResponseEntity<AirportFlightDTO> getFlight(
-            @PathVariable Long id) {
-
-        log.info("✅ [AirportFlightController] 항공편 단건 조회 → id: {}", id);
-
-        AirportFlightDTO dto = airportFlightService.getFlight(id);
-
-        return ResponseEntity.ok(dto);
-    }
+//    @GetMapping("/flights/{id}")
+//    @Operation(summary = "항공편 단건 조회",
+//            description = "항공편 ID로 단건 조회")
+//    public ResponseEntity<AirportFlightDTO> getFlight(
+//            @PathVariable Long id) {
+//
+//        log.info("✅ [AirportFlightController] 항공편 단건 조회 → id: {}", id);
+//
+//        AirportFlightDTO dto = airportFlightService.getFlight(id);
+//
+//        return ResponseEntity.ok(dto);
+//    }
 
     // ── 항공편 등록 (관리자) ──────────────────────────────────
     // POST /api/airport/flights
     // 관리자 기능 (Flutter 에서 직접 호출하지 않음)
-    @PostMapping("/flights")
-    @Operation(summary = "항공편 등록 (관리자)",
-            description = "새로운 항공편 등록")
-    public ResponseEntity<Long> register(
-            @RequestBody AirportFlightDTO dto) {
-
-        log.info("✅ [AirportFlightController] 항공편 등록 → {}", dto);
-
-        Long id = airportFlightService.register(dto);
-
-        log.info("✅ [AirportFlightController] 등록 완료 → id: {}", id);
-
-        return ResponseEntity.ok(id);
-    }
+//    @PostMapping("/flights")
+//    @Operation(summary = "항공편 등록 (관리자)",
+//            description = "새로운 항공편 등록")
+//    public ResponseEntity<Long> register(
+//            @RequestBody AirportFlightDTO dto) {
+//
+//        log.info("✅ [AirportFlightController] 항공편 등록 → {}", dto);
+//
+//        Long id = airportFlightService.register(dto);
+//
+//        log.info("✅ [AirportFlightController] 등록 완료 → id: {}", id);
+//
+//        return ResponseEntity.ok(id);
+//    }
 
     // ── 항공편 수정 (관리자) ──────────────────────────────────
     // PUT /api/airport/flights/{id}
     // PathVariable id 를 DTO 에 직접 설정 후 서비스 호출
     // ⚠️ economyCharge(DTO) → price(Entity) 매핑 (필드명 불일치, 작동 정상)
-    @PutMapping("/flights/{id}")
-    @Operation(summary = "항공편 수정 (관리자)",
-            description = "항공편 정보 수정")
-    public ResponseEntity<Void> modify(
-            @PathVariable Long id,
-            @RequestBody AirportFlightDTO dto) {
-
-        log.info("✅ [AirportFlightController] 항공편 수정 → id: {}", id);
-
-        // PathVariable id 를 DTO 에 세팅 후 서비스 전달
-        dto = AirportFlightDTO.builder()
-                .id(id)
-                .airlineNm(dto.getAirlineNm())
-                .flightNo(dto.getFlightNo())
-                .depAirportId(dto.getDepAirportId())
-                .arrAirportId(dto.getArrAirportId())
-                .depAirportNm(dto.getDepAirportNm())
-                .arrAirportNm(dto.getArrAirportNm())
-                .depPlandTime(dto.getDepPlandTime())
-                .arrPlandTime(dto.getArrPlandTime())
-                .economyCharge(dto.getEconomyCharge()) // ⚠️ 발표 후 price 로 통일 예정
-                .seatsLeft(dto.getSeatsLeft())
-                .build();
-
-        airportFlightService.modify(dto);
-
-        log.info("✅ [AirportFlightController] 수정 완료 → id: {}", id);
-
-        return ResponseEntity.ok().build();
-    }
+//    @PutMapping("/flights/{id}")
+//    @Operation(summary = "항공편 수정 (관리자)",
+//            description = "항공편 정보 수정")
+//    public ResponseEntity<Void> modify(
+//            @PathVariable Long id,
+//            @RequestBody AirportFlightDTO dto) {
+//
+//        log.info("✅ [AirportFlightController] 항공편 수정 → id: {}", id);
+//
+//        // PathVariable id 를 DTO 에 세팅 후 서비스 전달
+//        dto = AirportFlightDTO.builder()
+//                .id(id)
+//                .airlineNm(dto.getAirlineNm())
+//                .flightNo(dto.getFlightNo())
+//                .depAirportId(dto.getDepAirportId())
+//                .arrAirportId(dto.getArrAirportId())
+//                .depAirportNm(dto.getDepAirportNm())
+//                .arrAirportNm(dto.getArrAirportNm())
+//                .depPlandTime(dto.getDepPlandTime())
+//                .arrPlandTime(dto.getArrPlandTime())
+//                .economyCharge(dto.getEconomyCharge()) // ⚠️ 발표 후 price 로 통일 예정
+//                .seatsLeft(dto.getSeatsLeft())
+//                .build();
+//
+//        airportFlightService.modify(dto);
+//
+//        log.info("✅ [AirportFlightController] 수정 완료 → id: {}", id);
+//
+//        return ResponseEntity.ok().build();
+//    }
 
     // ── 항공편 삭제 (관리자) ──────────────────────────────────
     // DELETE /api/airport/flights/{id}
     // 관리자 기능 (Flutter 에서 직접 호출하지 않음)
-    @DeleteMapping("/flights/{id}")
-    @Operation(summary = "항공편 삭제 (관리자)",
-            description = "항공편 삭제")
-    public ResponseEntity<Void> remove(
-            @PathVariable Long id) {
-
-        log.info("✅ [AirportFlightController] 항공편 삭제 → id: {}", id);
-
-        airportFlightService.remove(id);
-
-        log.info("✅ [AirportFlightController] 삭제 완료 → id: {}", id);
-
-        return ResponseEntity.ok().build();
-    }
+//    @DeleteMapping("/flights/{id}")
+//    @Operation(summary = "항공편 삭제 (관리자)",
+//            description = "항공편 삭제")
+//    public ResponseEntity<Void> remove(
+//            @PathVariable Long id) {
+//
+//        log.info("✅ [AirportFlightController] 항공편 삭제 → id: {}", id);
+//
+//        airportFlightService.remove(id);
+//
+//        log.info("✅ [AirportFlightController] 삭제 완료 → id: {}", id);
+//
+//        return ResponseEntity.ok().build();
+//    }
 }
 
 /*
@@ -151,9 +151,9 @@ public class AirportFlightController {
  * [API 목록]
  * - GET    /api/airport/flights                : 항공편 목록 조회 (Flutter 메인 사용)
  * - GET    /api/airport/flights/{id}           : 항공편 단건 조회 (현재 미사용)
- * - POST   /api/airport/flights                : 항공편 등록 (관리자)
- * - PUT    /api/airport/flights/{id}           : 항공편 수정 (관리자)
- * - DELETE /api/airport/flights/{id}           : 항공편 삭제 (관리자)
+ * - POST   /api/airport/flights                : 항공편 등록 (관리자) (현재 미사용)
+ * - PUT    /api/airport/flights/{id}           : 항공편 수정 (관리자) (현재 미사용)
+ * - DELETE /api/airport/flights/{id}           : 항공편 삭제 (관리자) (현재 미사용)
  * ----------------------------------------------------------------------------------
  * [주의사항 / 참고]
  * ⚠️ 필드명 불일치 (발표 후 통일 예정)

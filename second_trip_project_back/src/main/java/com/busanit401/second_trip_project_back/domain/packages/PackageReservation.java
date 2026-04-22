@@ -17,6 +17,7 @@ import java.time.LocalDate;
 @ToString(exclude = {"member", "packageItem"})
 public class PackageReservation {
 
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -43,4 +44,5 @@ public class PackageReservation {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ReservationStatus status = ReservationStatus.PENDING;
+
 }
