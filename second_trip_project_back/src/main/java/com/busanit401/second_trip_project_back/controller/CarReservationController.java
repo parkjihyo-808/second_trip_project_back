@@ -35,18 +35,18 @@ public class CarReservationController {
         }
     }
 
-    // 내 예약 목록 (커서 기반 - 예약중 우선, endDate ASC)
+    // 내 예약 목록 (커서 기반 - startDate DESC)
     // GET /api/car/reservation/my?size=10
-    // GET /api/car/reservation/my?cursorStatusOrder=0&cursorEndDate=2025-05-10T00:00:00&cursorId=5&size=10
+    // GET /api/car/reservation/my?cursorStatusOrder=0&cursorStartDate=2025-05-10T00:00:00&cursorId=5&size=10
     @GetMapping("/my")
     public ResponseEntity<CarReservationCursorResponseDTO> getMyRentals(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam(defaultValue = "0") int cursorStatusOrder,
-            @RequestParam(defaultValue = "9999-12-31T23:59:59") LocalDateTime cursorEndDate,
+            @RequestParam(defaultValue = "9999-12-31T23:59:59") LocalDateTime cursorStartDate,
             @RequestParam(defaultValue = "0") Long cursorId,
             @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(rentalService.getMyReservationsCursor(
-                userDetails.getUsername(), cursorStatusOrder, cursorEndDate, cursorId, size));
+                userDetails.getUsername(), cursorStatusOrder, cursorStartDate, cursorId, size));
     }
 
     // 예약 취소

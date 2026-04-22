@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 public interface RentalService {
     CarReservationDTO createReservation(String mid, CarReservationRequestDTO request);
-    CarReservationCursorResponseDTO getMyReservationsCursor(String mid, int cursorStatusOrder, LocalDateTime cursorEndDate, Long cursorId, int size);
+    CarReservationCursorResponseDTO getMyReservationsCursor(String mid, int cursorStatusOrder, LocalDateTime cursorStartDate, Long cursorId, int size);
     CarReservationDTO cancelReservation(String mid, Long rentalId);
 
 }

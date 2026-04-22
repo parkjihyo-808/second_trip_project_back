@@ -60,9 +60,9 @@ public class RentalServiceImpl implements RentalService {
 
     @Override
     @Transactional(readOnly = true)
-    public CarReservationCursorResponseDTO getMyReservationsCursor(String mid, int cursorStatusOrder, LocalDateTime cursorEndDate, Long cursorId, int size) {
+    public CarReservationCursorResponseDTO getMyReservationsCursor(String mid, int cursorStatusOrder, LocalDateTime cursorStartDate, Long cursorId, int size) {
         List<CarReservation> carReservations = carReservationRepository.searchByUserMidWithCursor(
-                mid, cursorStatusOrder, cursorEndDate, cursorId, size + 1
+                mid, cursorStatusOrder, cursorStartDate, cursorId, size + 1
         );  //size가 10일 경우 11개의 데이터를 읽어서 가져옴
         boolean hasNext = carReservations.size() > size;    //11개를 가져올수 있기 때문에 10개보다 크면 다음이 있음 이렇게 한 이유는 아래줄에서 10개만 잘라서 표현하기 때문
         List<CarReservation> sliced = hasNext ? carReservations.subList(0, size) : carReservations; //10개의 데이터만 자름
@@ -72,7 +72,7 @@ public class RentalServiceImpl implements RentalService {
                 .reservation(sliced.stream().map(CarReservationDTO::from).toList())
                 .hasNext(hasNext)
                 .nextCursorStatusOrder(last != null ? (last.getStatus().name().equals("CONFIRMED") ? 0 : 1) : null)
-                .nextCursorEndDate(last != null ? last.getEndDate().toString() : null)
+                .nextCursorStartDate(last != null ? last.getStartDate().toString() : null)
                 .nextCursorId(last != null ? last.getId() : null)
                 .build();
     }

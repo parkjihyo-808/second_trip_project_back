@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface CarReservationSearch {
 
-    List<CarReservation> searchByUserMidWithCursor(String mid, int cursorStatusOrder, LocalDateTime cursorEndDate, Long cursorId, int size);
+    List<CarReservation> searchByUserMidWithCursor(String mid, int cursorStatusOrder, LocalDateTime cursorStartDate, Long cursorId, int size);
 
     boolean searchExistsOverlap(Long carId, LocalDateTime startDate, LocalDateTime endDate);
 
