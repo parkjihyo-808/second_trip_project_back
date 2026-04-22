@@ -28,27 +28,27 @@ public class CarReservationSearchImpl extends QuerydslRepositorySupport implemen
      *   INNER JOIN member ON reservation.user_id = member.id
      *   WHERE reservation.user_mid = :mid
      *     AND (
-     *       reservation.end_date < :cursorEndDate
-     *       OR (reservation.end_date = :cursorEndDate
+     *       reservation.start_date < :cursorStartDate
+     *       OR (reservation.start_date = :cursorStartDate
      *           AND CASE WHEN reservation.status = 'CONFIRMED' THEN 0 ELSE 1 END > :cursorStatusOrder)
-     *       OR (reservation.end_date = :cursorEndDate
+     *       OR (reservation.start_date = :cursorStartDate
      *           AND CASE WHEN reservation.status = 'CONFIRMED' THEN 0 ELSE 1 END = :cursorStatusOrder
      *           AND reservation.id > :cursorId)
      *     )
-     *   ORDER BY reservation.end_date DESC,
+     *   ORDER BY reservation.start_date DESC,
      *            CASE WHEN reservation.status = 'CONFIRMED' THEN 0 ELSE 1 END ASC,
      *            reservation.id ASC
      *   LIMIT :size
      *   예약 테이블에 차테이블과 유저테이블을 join후 mid가 같으면 읽어옴
      * @param mid
      * @param cursorStatusOrder
-     * @param cursorEndDate
+     * @param cursorStartDate
      * @param cursorId
      * @param size
      * @return
      */
     @Override
-    public List<CarReservation> searchByUserMidWithCursor(String mid, int cursorStatusOrder, LocalDateTime cursorEndDate, Long cursorId, int size) {
+    public List<CarReservation> searchByUserMidWithCursor(String mid, int cursorStatusOrder, LocalDateTime cursorStartDate, Long cursorId, int size) {
         NumberExpression<Integer> statusOrder = new CaseBuilder()
                 .when(reservation.status.eq(CarReservation.RentalStatus.CONFIRMED)).then(0)
                 .otherwise(1);  //confirm만 있어서 값은 무조건 0
@@ -58,19 +58,19 @@ public class CarReservationSearchImpl extends QuerydslRepositorySupport implemen
                 .join(reservation.user, member).fetchJoin()
                 .where(reservation.user.mid.eq(mid)
                         /*
-                        endDate=5월10일, statusOrder=0, id=7이라면:
+                        startDate=5월10일, statusOrder=0, id=7이라면:
 
-                        - endDate < 5월10일 → 날짜가 더 작은 것들 (DESC라 뒤에 오는 것들)
-                        - endDate = 5월10일 AND statusOrder > 0 → 날짜 같고 statusOrder 큰 것
-                        - endDate = 5월10일 AND statusOrder = 0 AND id > 7 → 다 같고 id만 큰 것
+                        - startDate < 5월10일 → 날짜가 더 작은 것들 (DESC라 뒤에 오는 것들)
+                        - startDate = 5월10일 AND statusOrder > 0 → 날짜 같고 statusOrder 큰 것
+                        - startDate = 5월10일 AND statusOrder = 0 AND id > 7 → 다 같고 id만 큰 것
                         이렇게 or로 하면 정렬 순서때문에 커서로 지정할수 있다.
                         즉,정렬 순서 그대로 우선순위 높은 것부터 OR로 쌓아가면 커서를 등록할수 있다.
 
                          */
-                        .and(reservation.endDate.lt(cursorEndDate)  //끝날짜 이전이라면 다음이 있으니깐 커서 지정
-                                .or(reservation.endDate.eq(cursorEndDate).and(statusOrder.gt(cursorStatusOrder)))   //끝날짜가 같다면 상태가 컨펌 아닌 것을 커서 지정
-                                .or(reservation.endDate.eq(cursorEndDate).and(statusOrder.eq(cursorStatusOrder)).and(reservation.id.gt(cursorId)))))    //끝날짜, 상태가 같다면 예약 id가 커서보다 크다면
-                .orderBy(reservation.endDate.desc(), statusOrder.asc(), reservation.id.asc())   //정렬을 이렇게 하기 때문에 커서이후에 모
+                        .and(reservation.startDate.lt(cursorStartDate)  //끝날짜 이전이라면 다음이 있으니깐 커서 지정
+                                .or(reservation.startDate.eq(cursorStartDate).and(statusOrder.gt(cursorStatusOrder)))   //끝날짜가 같다면 상태가 컨펌 아닌 것을 커서 지정
+                                .or(reservation.startDate.eq(cursorStartDate).and(statusOrder.eq(cursorStatusOrder)).and(reservation.id.gt(cursorId)))))    //끝날짜, 상태가 같다면 예약 id가 커서보다 크다면
+                .orderBy(reservation.startDate.desc(), statusOrder.asc(), reservation.id.asc())   //정렬을 이렇게 하기 때문에 커서이후에 모
                 .limit(size)    //10개
                 .fetch();
     }

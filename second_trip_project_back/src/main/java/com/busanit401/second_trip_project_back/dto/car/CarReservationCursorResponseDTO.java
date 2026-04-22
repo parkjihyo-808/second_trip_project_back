@@ -11,6 +11,6 @@ public class CarReservationCursorResponseDTO {
     private List<CarReservationDTO> reservation;
     private boolean hasNext;
     private Integer nextCursorStatusOrder;  // 0=CONFIRMED, 1=나머지
-    private String nextCursorEndDate;       // ISO 형식
+    private String nextCursorStartDate;     // ISO 형식
     private Long nextCursorId;
 }
