@@ -6,15 +6,13 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
 
 @RestController
-@RequestMapping("/api/reservations")
+@RequestMapping("/api/package-reservations")
 @RequiredArgsConstructor
 @Log4j2
 public class PackageReservationController {
@@ -22,25 +20,41 @@ public class PackageReservationController {
     private final PackageReservationService packageReservationService;
 
     @PostMapping("/")
-    public ResponseEntity<Long> register(
+    public ResponseEntity<?> register(
             @Valid @RequestBody PackageReservationDTO packageReservationDto,
             Principal principal) {
 
-        // 1. 요청이 여기까지 오는지 확인
-        log.info("📢 예약 컨트롤러 진입 성공!");
-
-        // 2. Principal이 제대로 넘어오는지 확인
         if (principal == null) {
-            log.error("❌ 에러: Principal이 null입니다. (로그인 토큰이 전달되지 않음)");
-            return ResponseEntity.status(401).build(); // 401 Unauthorized
+            log.error("❌ 예약 실패: 인증되지 않은 사용자");
+            return ResponseEntity.status(401).body("로그인이 필요합니다.");
         }
 
-        log.info("예약 요청 데이터: " + packageReservationDto);
+        log.info("📢 패키지 예약 요청: {} (사용자: {})", packageReservationDto, principal.getName());
 
-        String email = principal.getName();
-
-        Long reservationId = packageReservationService.register(packageReservationDto, email);
-
+        Long reservationId = packageReservationService.register(packageReservationDto, principal.getName());
         return ResponseEntity.ok(reservationId);
+    }
+
+    @GetMapping("/my-package")
+    public ResponseEntity<?> getMyPackageReservations(Principal principal) {
+        if (principal == null) {
+            log.error("❌ 예약 목록 조회 실패: 인증되지 않은 사용자");
+            return ResponseEntity.status(401).body("로그인이 필요합니다.");
+        }
+
+        log.info("📢 패키지 예약 목록 조회 요청: {}", principal.getName());
+
+        List<PackageReservationDTO> list = packageReservationService.getMyPackageReservations(principal.getName());
+        return ResponseEntity.ok(list);
+    }
+
+    @DeleteMapping("/{reservationId}")
+    public ResponseEntity<String> delete(@PathVariable Long reservationId, Principal principal) {
+
+        log.info("📢 패키지 예약 삭제 요청: ID={} (사용자: {})", reservationId, principal.getName());
+
+        packageReservationService.deleteReservation(reservationId, principal.getName());
+
+        return ResponseEntity.ok("예약이 삭제되었습니다.");
     }
 }
