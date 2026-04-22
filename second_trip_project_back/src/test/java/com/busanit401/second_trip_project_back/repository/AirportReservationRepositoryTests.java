@@ -38,9 +38,9 @@ public class AirportReservationRepositoryTests {
                         .retDepPlandTime(null)                  // 오는편 출발 예정시각
                         .retArrPlandTime(null)                  // 오는편 도착 예정시각
                         .retPrice(null)                         // 오는편 가격
-                        .passengerName("홍길동")               // 탑승객 이름
-                        .passengerBirth("19990101")             // 생년월일
-                        .passengerGender("남성")                // 성별
+//                        .passengerName("홍길동")               // 탑승객 이름
+//                        .passengerBirth("19990101")             // 생년월일
+//                        .passengerGender("남성")                // 성별
                         .isRoundTrip(false)                     // 편도/왕복
                         .reservedAt("2026-04-15 10:00:00")      // 예약 일시
                         .build(),
@@ -61,9 +61,9 @@ public class AirportReservationRepositoryTests {
                         .retDepPlandTime("20260503090000")       // 오는편 출발 예정시각
                         .retArrPlandTime("20260503101000")       // 오는편 도착 예정시각
                         .retPrice(95000)                        // 오는편 가격
-                        .passengerName("김철수")               // 탑승객 이름
-                        .passengerBirth("19850315")             // 생년월일
-                        .passengerGender("남성")                // 성별
+//                        .passengerName("김철수")               // 탑승객 이름
+//                        .passengerBirth("19850315")             // 생년월일
+//                        .passengerGender("남성")                // 성별
                         .isRoundTrip(true)                      // 편도/왕복
                         .reservedAt("2026-04-15 11:00:00")      // 예약 일시
                         .build()

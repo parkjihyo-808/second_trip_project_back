@@ -54,36 +54,36 @@ public class AirportReservationController {
     // ── 예약 단건 조회 ────────────────────────────────────────
     // GET /api/airport/reservations/{id}
     // 현재 Flutter 에서 미사용
-    @GetMapping("/reservations/{id}")
-    @Operation(summary = "예약 단건 조회",
-            description = "예약 ID로 단건 조회")
-    public ResponseEntity<AirportReservationDTO> getReservation(
-            @PathVariable Long id) {
-
-        log.info("✅ [AirportReservationController] 예약 단건 조회 → id: {}", id);
-
-        AirportReservationDTO dto = airportReservationService.getReservation(id);
-
-        return ResponseEntity.ok(dto);
-    }
+//    @GetMapping("/reservations/{id}")
+//    @Operation(summary = "예약 단건 조회",
+//            description = "예약 ID로 단건 조회")
+//    public ResponseEntity<AirportReservationDTO> getReservation(
+//            @PathVariable Long id) {
+//
+//        log.info("✅ [AirportReservationController] 예약 단건 조회 → id: {}", id);
+//
+//        AirportReservationDTO dto = airportReservationService.getReservation(id);
+//
+//        return ResponseEntity.ok(dto);
+//    }
 
     // ── 전체 예약 목록 조회 ───────────────────────────────────
     // GET /api/airport/reservations
     // 관리자 기능 (현재 Flutter 에서 미사용)
-    @GetMapping("/reservations")
-    @Operation(summary = "전체 예약 목록 조회",
-            description = "전체 예약 목록 조회 (관리자)")
-    public ResponseEntity<List<AirportReservationDTO>> getReservationList() {
-
-        log.info("✅ [AirportReservationController] 전체 예약 목록 조회");
-
-        List<AirportReservationDTO> list =
-                airportReservationService.getReservationList();
-
-        log.info("✅ [AirportReservationController] 조회 완료 → {}건", list.size());
-
-        return ResponseEntity.ok(list);
-    }
+//    @GetMapping("/reservations")
+//    @Operation(summary = "전체 예약 목록 조회",
+//            description = "전체 예약 목록 조회 (관리자)")
+//    public ResponseEntity<List<AirportReservationDTO>> getReservationList() {
+//
+//        log.info("✅ [AirportReservationController] 전체 예약 목록 조회");
+//
+//        List<AirportReservationDTO> list =
+//                airportReservationService.getReservationList();
+//
+//        log.info("✅ [AirportReservationController] 조회 완료 → {}건", list.size());
+//
+//        return ResponseEntity.ok(list);
+//    }
 
     // ── 회원 ID(mid)로 예약 목록 조회 ────────────────────────
     // GET /api/airport/reservations/my?mid={mid}
