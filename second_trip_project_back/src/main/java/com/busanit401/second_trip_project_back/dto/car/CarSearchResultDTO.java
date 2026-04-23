@@ -15,9 +15,6 @@ public class CarSearchResultDTO {
     private String fuel;
     private int lowestPrice;
     private List<CompanyCarDTO> companyCarDTOs;
-    private int totalCompanyCarCount;
-    private Integer nextCursorPrice;
-    private Long nextCursorId;
 
     @Data
     @Builder

@@ -68,8 +68,11 @@ public class CarReservationSearchImpl extends QuerydslRepositorySupport implemen
 
                          */
                         .and(reservation.startDate.lt(cursorStartDate)  //끝날짜 이전이라면 다음이 있으니깐 커서 지정
-                                .or(reservation.startDate.eq(cursorStartDate).and(statusOrder.gt(cursorStatusOrder)))   //끝날짜가 같다면 상태가 컨펌 아닌 것을 커서 지정
-                                .or(reservation.startDate.eq(cursorStartDate).and(statusOrder.eq(cursorStatusOrder)).and(reservation.id.gt(cursorId)))))    //끝날짜, 상태가 같다면 예약 id가 커서보다 크다면
+                                .or(reservation.startDate.eq(cursorStartDate)
+                                        .and(statusOrder.gt(cursorStatusOrder)))   //끝날짜가 같다면 상태가 컨펌 아닌 것을 커서 지정
+                                .or(reservation.startDate.eq(cursorStartDate)
+                                        .and(statusOrder.eq(cursorStatusOrder))
+                                        .and(reservation.id.gt(cursorId)))))    //끝날짜, 상태가 같다면 예약 id가 커서보다 크다면
                 .orderBy(reservation.startDate.desc(), statusOrder.asc(), reservation.id.asc())   //정렬을 이렇게 하기 때문에 커서이후에 모
                 .limit(size)    //10개
                 .fetch();
