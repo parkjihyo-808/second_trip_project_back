@@ -39,6 +39,7 @@ public class CustomSecurityConfig {
     private final APIUserDetailsService apiUserDetailsService;
     private final JWTUtil jwtUtil;  //jwt생성 및 관리
 
+    // [회원가입/로그인 관련] 비밀번호를 안전하게 암호화하는 도구 등록
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -56,14 +57,14 @@ public class CustomSecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         log.info("------------------- 시큐리티 설정 로드 중 (외부 접속 허용 버전) -------------------");
 
-        // AuthenticationManagerBuilder 생성 및 설정
+        // [로그인 관련] 인증을 담당할 매니저 설정
         AuthenticationManagerBuilder authenticationManagerBuilder =
                 http.getSharedObject(AuthenticationManagerBuilder.class);
 
         // AuthenticationManagerBuilder에 UserDetailsService와 PasswordEncoder 설정
         authenticationManagerBuilder
-                .userDetailsService(apiUserDetailsService) // 사용자 정보를 제공하는 서비스 설정   //유저 정보 dto 생성
-                .passwordEncoder(passwordEncoder()); // 비밀번호 암호화 방식 설정
+                .userDetailsService(apiUserDetailsService) // 유저 정보를 DB에서 가져오는 서비스 연결
+                .passwordEncoder(passwordEncoder()); // 입력한 비번과 DB 비번을 비교할 때 사용할 암호화기 설정
 
         // AuthenticationManager 생성
         AuthenticationManager authenticationManager =
@@ -72,50 +73,46 @@ public class CustomSecurityConfig {
         // AuthenticationManager를 HttpSecurity에 설정
         http.authenticationManager(authenticationManager); // 반드시 필요: Security 필터 체인에서 사용할 AuthenticationManager 설정
 
-        // APILoginFilter 생성 및 AuthenticationManager 설정
+        // [로그인 관련] "/generateToken" 주소로 요청이 오면 실행될 '로그인 필터' 설정
         APILoginFilter apiLoginFilter = new APILoginFilter("/generateToken"); // 로그인 포스트 엔드포인트 설정
         apiLoginFilter.setAuthenticationManager(authenticationManager); // APILoginFilter에서 사용할 AuthenticationManager 설정
 
+        // [로그인 관련] 로그인 성공 시 JWT 토큰을 발급해주는 '성공 핸들러' 연결
         // APILoginSuccessHandler 생성: 인증 성공 후 처리 로직을 담당
-        // 교체
         APILoginSuccessHandler successHandler = new APILoginSuccessHandler(jwtUtil);    //성공하면 키생성해서 응답하는 핸들러
-
         // SuccessHandler 설정: 로그인 성공 시 APILoginSuccessHandler가 호출되도록 설정
         apiLoginFilter.setAuthenticationSuccessHandler(successHandler); //로그인 필터에서 성공시 응답할 핸들러 등록
 
-        // APILoginFilter를 UsernamePasswordAuthenticationFilter 이전에 추가
-        //apiLoginFilter설정
-        //로그인 필터는 로그인 할때만 사용
+        // [인증 관련] 요청마다 토큰이 유효한지 검사하는 필터들 순서대로 배치
         http.addFilterBefore(apiLoginFilter, UsernamePasswordAuthenticationFilter.class); // 사용자 인증 전에 APILoginFilter 동작 설정
-
         http.addFilterBefore(
                 tokenCheckFilter(jwtUtil, apiUserDetailsService),
                 UsernamePasswordAuthenticationFilter.class
         );
-
         // RefreshTokenFilter를 TokenCheckFilter 이전에 등록
         http.addFilterBefore(
                 new RefreshTokenFilter("/refreshToken", jwtUtil),
                 TokenCheckFilter.class
         );
 
+        // [보안 설정] REST API(앱 통신)이므로 CSRF는 끄고, CORS는 허용 설정
         // 1. CSRF 완전 비활성화 (가장 확실한 방법)
         http.csrf(AbstractHttpConfigurer::disable);
-
         // 2. CORS 설정 연결
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
+        // [회원가입 관련 중요!] 인증 없이 접근 가능한 경로 설정
         // 3. 권한 설정 (로그인 없이 가입이 가능하도록 더 명확하게!)
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/member/**").permitAll() // 회원가입, 로그인 등 멤버 경로 허용
+                .requestMatchers("/api/member/**").permitAll() // 회원가입, 로그인 등 멤버 경로 허용 // ⭐ 여기 덕분에 로그인 안 한 상태에서도 '회원가입' 주소에 접근 가능
                 .requestMatchers("/car/**").permitAll()
                 .requestMatchers("/swagger-ui/**","/v3/api-docs/**","swagger-resources/**", "/webjars/**").permitAll()
 //                .anyRequest().authenticated() // 나머지 요청은 인증 필요
                 .anyRequest().permitAll() // 나머지 요청은 인증 필요
         );
 
+        // [인증 방식] 세션을 쓰지 않고 토큰을 쓰는 'Stateless' 방식으로 설정 (앱 최적화)
         // 4. 세션 설정 (나중에 토큰/JWT 쓸 거면 Stateless로 가야 하지만, 일단 기본으로 둬!)
-
         http.sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         );
