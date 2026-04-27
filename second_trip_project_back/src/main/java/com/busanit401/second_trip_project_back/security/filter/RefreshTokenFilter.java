@@ -25,8 +25,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class RefreshTokenFilter  extends OncePerRequestFilter {
 
-    private final String refreshPath;
-
+    private final String refreshPath; // "/refreshToken" 주소 감시
     private final JWTUtil jwtUtil;
 
     @Override
@@ -34,6 +33,7 @@ public class RefreshTokenFilter  extends OncePerRequestFilter {
 
         String path = request.getRequestURI();
         log.info("lsy path refresh token filter..... : " + path);
+        // 1. 경로 체크: 요청 주소가 "/refreshToken"이 아니면 그냥 통과
         if (!path.equals(refreshPath)) {
             log.info("lsy skip refresh token filter....refreshPath : ." + refreshPath);
             log.info("lsy skip refresh token filter.....");
@@ -43,15 +43,15 @@ public class RefreshTokenFilter  extends OncePerRequestFilter {
 
         log.info("lsy Refresh Token Filter...run..............1");
 
-        //전송된 JSON에서 accessToken과 refreshToken을 얻어온다.
+        // 2. 데이터 추출: 플러터에서 보낸 만료된 AccessToken과 아직 살아있는 RefreshToken을 읽어와
         Map<String, String> tokens = parseRequestJSON(request);
-
         String accessToken = tokens.get("accessToken");
         String refreshToken = tokens.get("refreshToken");
 
         log.info("lsy accessToken: " + accessToken);
         log.info("lsy refreshToken: " + refreshToken);
 
+        // 3. Access Token 검사: 토큰 자체가 아예 없는 건 아닌지 확인해.
         try{
             checkAccessToken(accessToken);
         }catch(RefreshTokenException refreshTokenException){
@@ -59,8 +59,8 @@ public class RefreshTokenFilter  extends OncePerRequestFilter {
             return;
         }
 
+        // 4. Refresh Token 검사: 이게 만료되면 진짜 다시 로그인
         Map<String, Object> refreshClaims = null;
-
         try {
 
             refreshClaims = checkRefreshToken(refreshToken);
@@ -71,11 +71,9 @@ public class RefreshTokenFilter  extends OncePerRequestFilter {
             return;
         }
 
-        //Refresh Token의 유효시간이 얼마 남지 않은 경우
-        Integer exp = (Integer)refreshClaims.get("exp");
-
+        // 5. 토큰 갱신 로직: Refresh Token의 남은 시간 계산
+        Integer exp = (Integer)refreshClaims.get("exp"); // 만료 시간
         Date expTime = new Date(Instant.ofEpochMilli(exp).toEpochMilli() * 1000);
-
         Date current = new Date(System.currentTimeMillis());
 
         //만료 시간과 현재 시간의 간격 계산
@@ -89,14 +87,15 @@ public class RefreshTokenFilter  extends OncePerRequestFilter {
 
         String username = (String)refreshClaims.get("mid");
         log.info("username: " + username);
-        //이상태까지 오면 무조건 AccessToken은 새로 생성
-        String accessTokenValue = jwtUtil.generateToken(Map.of("username", username), 1);
 
+        // [결과 1] AccessToken은 무조건 새로 발급
+        String accessTokenValue = jwtUtil.generateToken(Map.of("username", username), 1);
         String refreshTokenValue = tokens.get("refreshToken");
 
         //RefrshToken이 3분도 안남았다면..
 //        if(gapTime < (1000 * 60  * 3  ) ){
         //RefrshToken이 3일도 안남았다면..
+        // [결과 2] RefreshToken이 3일도 안 남았다면 이것도 새로 발급해서 연장
         if(gapTime < (1000 * 60 * 60 * 24 * 3  ) ){
             log.info("new Refresh Token required...  ");
             refreshTokenValue = jwtUtil.generateToken(Map.of("username", username), 3);
@@ -105,12 +104,14 @@ public class RefreshTokenFilter  extends OncePerRequestFilter {
         log.info("Refresh Token result....................");
         log.info("accessToken: " + accessTokenValue);
         log.info("refreshToken: " + refreshTokenValue);
-//
+
+        // 6. 응답: 새로 만든 토큰들을 플러터에게 다시 보냄
         sendTokens(accessTokenValue, refreshTokenValue, response);
 
 
     }
 
+    // ... 이하 토큰 검사 및 전송 보조 메서드들
     private Map<String,String> parseRequestJSON(HttpServletRequest request) {
 
         //JSON 데이터를 분석해서 mid, mpw 전달 값을 Map으로 처리

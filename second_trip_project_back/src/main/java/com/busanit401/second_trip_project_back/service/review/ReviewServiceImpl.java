@@ -20,6 +20,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     private final ReviewRepository reviewRepository;
 
+    // 리뷰 작성
     @Override
     public Long register(ReviewDTO reviewDTO) {
         log.info("리뷰 등록 로직 실행: " + reviewDTO);
@@ -55,6 +56,7 @@ public class ReviewServiceImpl implements ReviewService {
         return entityToDTO(review);
     }
 
+    // 리뷰 수정
     @Override
     public void modify(ReviewDTO reviewDTO) {
         log.info("리뷰 수정 로직 실행: " + reviewDTO);
@@ -71,6 +73,7 @@ public class ReviewServiceImpl implements ReviewService {
         reviewRepository.save(review);
     }
 
+    // 리뷰 삭제
     @Override
     public void remove(Long rno) {
         log.info("리뷰 삭제 로직 실행: " + rno);
