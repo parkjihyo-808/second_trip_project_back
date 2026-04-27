@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -38,54 +37,6 @@ public class CarRepositotyTests {
     }
 
     @Test
-    @DisplayName("차량 이름과 지역으로 페이지 검색")
-    void searchCompanyCarsByPage_returnsCars() {
-        // DB에 있는 실제 차량 이름/지역으로 테스트
-        List<Car> all = carRepository.findAll();
-        if (all.isEmpty()) return;
-
-        Car sample = all.get(0);
-        String carName = sample.getName();
-        String region = sample.getCompany().getRegion();
-
-        List<Car> result = carRepository.searchCompanyCarsByPage(
-                carName, region, List.of(), PageRequest.of(0, 10));
-
-        assertThat(result).isNotEmpty();
-    }
-
-    @Test
-    @DisplayName("차량 이름과 지역으로 총 개수 조회")
-    void searchCountByCarNameAndRegion_returnsCount() {
-        List<Car> all = carRepository.findAll();
-        if (all.isEmpty()) return;
-
-        Car sample = all.get(0);
-        String carName = sample.getName();
-        String region = sample.getCompany().getRegion();
-
-        int count = carRepository.searchCountByCarNameAndRegion(carName, region, List.of());
-
-        assertThat(count).isGreaterThan(0);
-    }
-
-    @Test
-    @DisplayName("예약 불가 차량 제외 후 총 개수가 전체보다 적거나 같음")
-    void searchCountByCarNameAndRegion_excludesUnavailable() {
-        List<Car> all = carRepository.findAll();
-        if (all.isEmpty()) return;
-
-        Car sample = all.get(0);
-        String carName = sample.getName();
-        String region = sample.getCompany().getRegion();
-
-        int totalCount = carRepository.searchCountByCarNameAndRegion(carName, region, List.of());
-        int excludedCount = carRepository.searchCountByCarNameAndRegion(carName, region, List.of(sample.getId()));
-
-        assertThat(excludedCount).isLessThanOrEqualTo(totalCount);
-    }
-
-    @Test
     @DisplayName("지역으로 차종 커서 기반 조회 - 첫 페이지")
     void searchCarTypesByRegionWithCursor_firstPage() {
         List<Car> all = carRepository.findAll();
@@ -94,7 +45,7 @@ public class CarRepositotyTests {
         String region = all.get(0).getCompany().getRegion();
 
         List<CarTypeDTO> result = carRepository.searchCarTypesByRegionWithCursor(
-                region, List.of(), 0, "", PageRequest.of(0, 10));
+                region, List.of(), 0, "", 10);
 
         assertThat(result).isNotEmpty();
         assertThat(result.get(0).getLowestPrice()).isGreaterThan(0);
@@ -113,15 +64,6 @@ public class CarRepositotyTests {
                 List.of(carName), region, List.of());
 
         assertThat(result).isNotEmpty();
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 차량 이름으로 검색 시 빈 결과")
-    void searchCompanyCarsByPage_notFound_returnsEmpty() {
-        List<Car> result = carRepository.searchCompanyCarsByPage(
-                "절대없는차량이름_xyz", "부산", List.of(), PageRequest.of(0, 10));
-
-        assertThat(result).isEmpty();
     }
 
     @Test

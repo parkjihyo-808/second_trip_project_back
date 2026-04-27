@@ -108,7 +108,7 @@ public class CustomSecurityConfig {
                 .requestMatchers("/car/**").permitAll()
                 .requestMatchers("/swagger-ui/**","/v3/api-docs/**","swagger-resources/**", "/webjars/**").permitAll()
 //                .anyRequest().authenticated() // 나머지 요청은 인증 필요
-                .anyRequest().permitAll() // 나머지 요청은 인증 필요
+                .anyRequest().permitAll() // 모든 요청 허용
         );
 
         // [인증 방식] 세션을 쓰지 않고 토큰을 쓰는 'Stateless' 방식으로 설정 (앱 최적화)
