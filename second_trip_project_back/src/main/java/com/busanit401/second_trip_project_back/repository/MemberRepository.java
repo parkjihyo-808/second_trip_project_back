@@ -17,7 +17,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByMid(String mid);
 
     // 2. 아이디 중복 확인
-    // 기존 2번(existsByMid) 코드를 이걸로 덮어씌워!
     @Query("SELECT COUNT(m) > 0 FROM Member m WHERE m.mid = :mid OR m.email = :mid")
     boolean existsByMid(@Param("mid") String mid);
 

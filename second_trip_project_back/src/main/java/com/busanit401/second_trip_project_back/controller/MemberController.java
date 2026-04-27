@@ -45,7 +45,7 @@ public class MemberController {
         return memberService.login(memberDTO.getMid(), memberDTO.getMpw());
     }
 
-    // ⭐ 5. 회원 정보 수정 (플러터 EditProfileScreen 연동)
+    // 5. 회원 정보 수정 (플러터 EditProfileScreen 연동)
     @PutMapping("/modify")
     public ResponseEntity<String> modify(@RequestBody MemberDTO memberDTO) {
         log.info("회원 정보 수정 요청! 수정 데이터: " + memberDTO);
