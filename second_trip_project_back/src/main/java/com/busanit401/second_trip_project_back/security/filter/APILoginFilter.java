@@ -60,7 +60,7 @@ public class APILoginFilter extends AbstractAuthenticationProcessingFilter {
     private Map<String, String> parseRequestJSON(HttpServletRequest request) {
         // JSON 데이터를 파싱하여 mid와 mpw 값을 Map으로 처리
         try (Reader reader = new InputStreamReader(request.getInputStream())) {
-            Gson gson = new Gson(); // 구글의 JSON 처리 라이브러리 활용
+            Gson gson = new Gson(); // 구글의 JSON 처리 라이브러리 활용APILoginFilter
             return gson.fromJson(reader, Map.class);
         } catch (Exception e) {
             log.error("Error parsing JSON request: {}", e.getMessage());
