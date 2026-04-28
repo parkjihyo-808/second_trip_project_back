@@ -112,7 +112,7 @@ public class CustomSecurityConfig {
         );
 
         // [인증 방식] 세션을 쓰지 않고 토큰을 쓰는 'Stateless' 방식으로 설정 (앱 최적화)
-        // 4. 세션 설정 (나중에 토큰/JWT 쓸 거면 Stateless로 가야 하지만, 일단 기본으로 둬!)
+        // 4. 세션 설정
         http.sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         );
