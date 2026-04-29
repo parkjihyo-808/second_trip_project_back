@@ -106,6 +106,7 @@ public class CustomSecurityConfig {
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/member/**").permitAll() // 회원가입, 로그인 등 멤버 경로 허용 // ⭐ 여기 덕분에 로그인 안 한 상태에서도 '회원가입' 주소에 접근 가능
                 .requestMatchers("/api/tours/**").permitAll()
+                .requestMatchers("/api/packages/**").permitAll()
                 .requestMatchers("/car/**").permitAll()
                 .requestMatchers("/swagger-ui/**","/v3/api-docs/**","swagger-resources/**", "/webjars/**").permitAll()
 //                .anyRequest().authenticated() // 나머지 요청은 인증 필요

@@ -14,8 +14,8 @@ import java.time.LocalDate;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString(exclude = {"member", "packageItem"})
-public class PackageReservation {
+@ToString(exclude = {"member", "TravelPackageItem"})
+public class TravelPackageReservation {
 
 
     @Id
@@ -28,7 +28,7 @@ public class PackageReservation {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "package_id", nullable = false)
-    private PackageItem packageItem;
+    private TravelPackageItem travelPackageItem;
 
     @Column(nullable = false)
     private LocalDate reservationDate;
