@@ -10,6 +10,11 @@ public class TourItemMapper {
     // Entity를 DTO로 변환하는 메서드
     public TourItemResponseDTO toDTO(TourItem entity) {
 
+        // 들어온 entity가 null이면 변환할 필요가 없으니 null을 리턴
+        if (entity == null) {
+            return null;
+        }
+
         // 2. 가격 계산 (기본 가격 + 식사 비용)
         // 만약 null이면 0으로 처리하여 에러 방지
         Long basePrice = entity.getTourPrice() != null ? entity.getTourPrice() : 0L;
