@@ -109,10 +109,10 @@ public class TokenCheckFilter extends OncePerRequestFilter {
         // 회원가입, 로그인, 중복체크 같은 경로는 토큰이 없어도 당연히 통과
         // 아래 경로들로 들어오는 요청은 필터 로직(토큰 검사)을 건너뜁니다.
         if (!path.startsWith("/api/") ||
-                path.startsWith("/api/member/exists/") ||
-                path.startsWith("/api/member/check-mid") ||
                 path.startsWith("/api/member/register") ||
                 path.startsWith("/api/member/login") ||
+                path.startsWith("/api/member/exists/") ||
+                path.startsWith("/api/member/check-mid") ||
                 path.startsWith("/api/member/check-email") ||
                 path.startsWith("/api/member/signup") ||
                 path.startsWith("/api/airport/flights")) {
