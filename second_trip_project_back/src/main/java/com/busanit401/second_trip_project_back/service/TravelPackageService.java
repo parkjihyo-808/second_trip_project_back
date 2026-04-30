@@ -11,7 +11,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/**패키지 아이템 관련 비즈니스 로직 서비스**/
+/**
+ * 패키지 아이템 관련 비즈니스 로직 서비스
+ **/
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -22,12 +24,13 @@ public class TravelPackageService {
 
     // 전체 리스트 조회
     @Transactional(readOnly = true)
-    public Page<TravelPackageItemDTO> getList(Pageable pageable) {
+    public Page<TravelPackageItemDTO> getList(String category, Pageable pageable) {
         // 1. DB에서 엔티티를 페이징 처리하여 가져옴
         // 2. map함수로 순회하며 가져온 데이터를 packageItemPage에 넣음
-        Page<TravelPackageItem> packageItemPage = travelPackageItemRepository.findAll(pageable);
+        Page<TravelPackageItem> packageItemPage = travelPackageItemRepository.findByCategory(category, pageable);
         return packageItemPage.map(travelPackageItemMapper::toDTO);
     }
+
 
     //하나 조회(상세보기)
     @Transactional(readOnly = true)
@@ -40,3 +43,7 @@ public class TravelPackageService {
         return travelPackageItemMapper.toDTO(entity);
     }
 }
+
+/*서비스 로직
+조회용 데이터는 전체가 아닌 페이징 처리 후 가져옴
+하나 조회 시 찾는 ID 정보가 없으면 예외처리 발생*/

@@ -21,9 +21,10 @@ public class TravelPackageController {
     // 호출 예시: /api/packages/list?page=0&size=10&sort=id,desc
     @GetMapping("/packages_list")
     public ResponseEntity<Page<TravelPackageItemDTO>> getList(
+            @RequestParam(name = "category") String category,
             @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        return ResponseEntity.ok(travelPackageService.getList(pageable));
+        return ResponseEntity.ok(travelPackageService.getList(category, pageable));
     }
 
     // 2. 단건 상세 조회
