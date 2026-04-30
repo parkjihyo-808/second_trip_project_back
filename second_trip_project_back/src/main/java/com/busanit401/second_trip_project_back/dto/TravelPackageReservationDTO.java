@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PackageReservationDTO {
+public class TravelPackageReservationDTO {
     private Long reservationId;
     private Long packageId; //int에서 Long으로 수정
     private String packageName;
