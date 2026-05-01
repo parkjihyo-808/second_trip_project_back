@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface TravelPackageReservationRepository extends JpaRepository<TravelPackageReservation, Long> {
     List<TravelPackageReservation> findByMember(Member member);
+    List<TravelPackageReservation> findByMemberEmail(String email);
 }
