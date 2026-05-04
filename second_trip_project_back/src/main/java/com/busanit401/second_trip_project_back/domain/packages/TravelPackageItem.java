@@ -33,7 +33,7 @@ public class TravelPackageItem {
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "json")
-    private List<String> exclusions;
+    private List<String> exclusions; //불포함 사항 (예: 중식, 개인경비)
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "json")
@@ -57,13 +57,13 @@ public class TravelPackageItem {
     private Integer maxPeople; // 최대 인원
 
     @Column
-    private String category;
+    private String category; // 카테고리 (예: Season, Family 등)
 
     @Column
-    private String region;
+    private String region; // 여행 지역 (예: 경주, 제주 등)
 
     @Column(length = 2000)
-    private String description;
+    private String description; // 패키지에 대한 간단한 설명
 
 
     // 필요한 경우 상품 정보 수정 메서드 추가

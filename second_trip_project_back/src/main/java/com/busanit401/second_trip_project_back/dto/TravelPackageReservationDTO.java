@@ -14,8 +14,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TravelPackageReservationDTO {
-    private Long reservationId;
     private Long packageId; //int에서 Long으로 수정
+    private Long reservationId;
     private String packageName;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
